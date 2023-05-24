@@ -47,6 +47,4 @@ public final class PassportModel {
         this.givenBy = passportRequest.givenBy();
         return this;
     }
-
-
 }

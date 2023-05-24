@@ -1,6 +1,7 @@
 package com.bdg.cardholder_management_module.repository;
 
 import com.bdg.cardholder_management_module.entity.AddressEntity;
+import com.bdg.cardholder_management_module.entity.CardHolderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,12 +24,10 @@ public interface AddressRepository extends JpaRepository<AddressEntity, Long> {
 
     List<AddressEntity> findAddressByStreet(String street);
 
-
-    @Query(
-            value = "select count(cha) from card_holder_address where cha.address_id = ?1",
-            nativeQuery = true
-    )
-    int countOfAddressInCHAByAddressId(Long id);
-
-
+//
+//    @Query(
+//            value = "select count(cha) from card_holder_address where cha.address_id = ?1",
+//            nativeQuery = true
+//    )
+//    int countOfAddressInCHAByAddressId(Long id);
 }

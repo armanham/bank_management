@@ -58,6 +58,7 @@ public class CardHolderEntity {
     private String email;
 
     @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CardHolderType cardHolderType;
 
     @Column(name = "created_on")
