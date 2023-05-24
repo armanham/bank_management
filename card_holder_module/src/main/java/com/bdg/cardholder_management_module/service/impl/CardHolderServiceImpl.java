@@ -10,9 +10,7 @@ import com.bdg.cardholder_management_module.model.PassportModel;
 import com.bdg.cardholder_management_module.repository.AddressRepository;
 import com.bdg.cardholder_management_module.repository.CardHolderRepository;
 import com.bdg.cardholder_management_module.repository.PassportRepository;
-import com.bdg.cardholder_management_module.service.AddressService;
 import com.bdg.cardholder_management_module.service.CardHolderService;
-import com.bdg.cardholder_management_module.service.PassportService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,23 +26,19 @@ public class CardHolderServiceImpl implements CardHolderService {
 
     private final CardHolderRepository cardHolderRepository;
     private final PassportRepository passportRepository;
-    private final AddressService addressService;
     private final AddressRepository addressRepository;
-    private final PassportService passportService;
+
 
     @Autowired
     public CardHolderServiceImpl(
             CardHolderRepository cardHolderRepository,
             PassportRepository passportRepository,
-            AddressService addressService,
-            AddressRepository addressRepository,
-            PassportService passportService) {
+            AddressRepository addressRepository) {
         this.cardHolderRepository = cardHolderRepository;
-        this.addressService = addressService;
         this.addressRepository = addressRepository;
-        this.passportService = passportService;
         this.passportRepository = passportRepository;
     }
+
 
     @Override
     public boolean save(CardHolderModel cardHolderModel, PassportModel passportModel) {
@@ -74,7 +68,7 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean updatePersonalInfo(String passportNo, CardHolderModel cardHolderModel) {
+    public boolean updatePersonalInfoByPassportNumber(String passportNo, CardHolderModel cardHolderModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
                 cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
 
@@ -83,13 +77,13 @@ public class CardHolderServiceImpl implements CardHolderService {
         } else {
             CardHolderEntity cardHolderEntity = optionalCardHolderEntityByPassportNumber.get();
 
-            if (!cardHolderModel.getDob().equals(cardHolderEntity.getDob().toString())){
+            if (!cardHolderModel.getDob().equals(cardHolderEntity.getDob().toString())) {
                 throw new IllegalArgumentException("Date of birth is not updatable: ");
             }
-            if (cardHolderRepository.existsCardHolderEntityByEmail(cardHolderModel.getEmail())){
+            if (cardHolderRepository.existsCardHolderEntityByEmail(cardHolderModel.getEmail())) {
                 throw new IllegalArgumentException("Email already exists: ");
             }
-            if (cardHolderRepository.existsCardHolderEntityByPhone(cardHolderModel.getPhone())){
+            if (cardHolderRepository.existsCardHolderEntityByPhone(cardHolderModel.getPhone())) {
                 throw new IllegalArgumentException("Phone number already exists: ");
             }
 
@@ -104,7 +98,7 @@ public class CardHolderServiceImpl implements CardHolderService {
     }
 
     @Override
-    public boolean delete(String passportNo) {
+    public boolean deleteByPassportNumber(String passportNo) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
                 cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
 
@@ -115,10 +109,18 @@ public class CardHolderServiceImpl implements CardHolderService {
             if (cardHolderEntity.getIsDeleted()) {
                 throw new IllegalArgumentException("Card holder is already deleted with passed passport number: ");
             }
-            cardHolderEntity.setIsDeleted(true);
             cardHolderEntity.getPassport().setIsDeleted(true);
+            cardHolderEntity.setIsDeleted(true);
 
-//            if(addressRepository.countOfAddressInCHAByAddressId(cardHolderEntity.getAddresses().))
+            for (AddressEntity addressEntity : cardHolderEntity.getAddresses()) {
+                if (cardHolderRepository.occurrenceInCHA(Math.toIntExact(addressEntity.getId())) == 1){
+                    addressEntity.setIsDeleted(true);
+                    addressEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+                }
+            }
+
+            cardHolderRepository.
+                    deleteCardHolderWithAddressFromCHA(cardHolderEntity.getId());
 
             return true;
         }

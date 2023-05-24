@@ -8,9 +8,9 @@ public interface CardHolderService {
 
     boolean save(CardHolderModel cardHolderModel, PassportModel passportModel);
 
-    boolean updatePersonalInfo(String passportNo, CardHolderModel cardHolderModel);
+    boolean updatePersonalInfoByPassportNumber(String passportNo, CardHolderModel cardHolderModel);
 
-    boolean delete(String passportNo);
+    boolean deleteByPassportNumber(String passportNo);
 
     boolean addAddress(String passportNo, AddressModel addressModel);
 }
