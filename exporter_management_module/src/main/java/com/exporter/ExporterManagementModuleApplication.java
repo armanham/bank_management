@@ -1,4 +1,4 @@
-package exporter_management_module;
+package com.exporter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
