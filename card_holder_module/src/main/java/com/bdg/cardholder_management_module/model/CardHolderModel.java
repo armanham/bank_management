@@ -1,60 +1,43 @@
 package com.bdg.cardholder_management_module.model;
 
-import com.bdg.cardholder_management_module.entity.CardHolderType;
-import com.bdg.cardholder_management_module.request.CardHolderRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.executable.ValidateOnExecution;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
+import java.util.Set;
 
-import java.util.Date;
+public class CardHolderModel {
 
-@Getter
-@Setter
-public final class CardHolderModel {
-
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String dob;
-    private String phone;
-    private String email;
-    private CardHolderType cardHolderType;
+    private PersonalInfoModel personalInfoModel;
+    private PassportModel passportModel;
+    private Set<AddressModel> addressModelList;
 
     public CardHolderModel(
-            Long id,
-            String firstName,
-            String lastName,
-            String dob,
-            String phone,
-            String email,
-            CardHolderType cardHolderType) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dob = dob;
-        this.phone = phone;
-        this.email = email;
-        this.cardHolderType = cardHolderType;
+            PersonalInfoModel personalInfoModel,
+            PassportModel passportModel,
+            Set<AddressModel> addressModelList) {
+        this.personalInfoModel = personalInfoModel;
+        this.passportModel = passportModel;
+        this.addressModelList = addressModelList;
     }
 
-    public CardHolderModel getFromRequest(CardHolderRequest cardHolderRequest){
-        this.firstName = cardHolderRequest.firstName();
-        this.lastName = cardHolderRequest.lastName();
-        this.dob = cardHolderRequest.dob();
-        this.phone = cardHolderRequest.phone();
-        this.email = cardHolderRequest.email();
-        this.cardHolderType = CardHolderType.valueOf(cardHolderRequest.cardHolderType());
-        return this;
+    public PersonalInfoModel getPersonalInfoModel() {
+        return personalInfoModel;
     }
 
-    public CardHolderModel(CardHolderRequest cardHolderRequest) {
-        this.firstName = cardHolderRequest.firstName();
-        this.lastName = cardHolderRequest.lastName();
-        this.dob = cardHolderRequest.dob();
-        this.phone = cardHolderRequest.phone();
-        this.email = cardHolderRequest.email();
-        this.cardHolderType = CardHolderType.valueOf(cardHolderRequest.cardHolderType());
+    public void setPersonalInfoModel(PersonalInfoModel personalInfoModel) {
+        this.personalInfoModel = personalInfoModel;
+    }
+
+    public PassportModel getPassportModel() {
+        return passportModel;
+    }
+
+    public void setPassportModel(PassportModel passportModel) {
+        this.passportModel = passportModel;
+    }
+
+    public Set<AddressModel> getAddressModelList() {
+        return addressModelList;
+    }
+
+    public void setAddressModelList(Set<AddressModel> addressModelList) {
+        this.addressModelList = addressModelList;
     }
 }

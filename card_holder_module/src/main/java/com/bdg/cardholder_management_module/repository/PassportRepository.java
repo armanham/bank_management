@@ -11,6 +11,5 @@ public interface PassportRepository extends JpaRepository<PassportEntity, String
 
     boolean existsBySerialNumber(String serialNumber);
 
-    Optional<PassportEntity> findBySerialNumber(String serialNumber);
-
+    Optional<PassportEntity> findPassportEntityBySerialNumber(String serialNumber);
 }

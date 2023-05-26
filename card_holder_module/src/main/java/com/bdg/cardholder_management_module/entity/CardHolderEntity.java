@@ -2,12 +2,8 @@ package com.bdg.cardholder_management_module.entity;
 
 import com.bdg.cardholder_management_module.entity.demo.AccountDemoEntity;
 import com.bdg.cardholder_management_module.entity.demo.CardDemoEntity;
-import com.bdg.cardholder_management_module.model.CardHolderModel;
-import com.bdg.cardholder_management_module.model.PassportModel;
+import com.bdg.cardholder_management_module.model.PersonalInfoModel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Date;
 import java.util.LinkedHashSet;
@@ -32,9 +28,6 @@ import java.util.Set;
 
         }
 )
-@NoArgsConstructor
-@Getter
-@Setter
 public class CardHolderEntity {
 
     @Id
@@ -48,7 +41,8 @@ public class CardHolderEntity {
     @Column(name = "l_name", nullable = false, length = 64)
     private String lastName;
 
-    @Column(name = "dob", nullable = false, updatable = false)
+    @Column(name = "dob", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dob;
 
     @Column(name = "phone", nullable = false, length = 32)
@@ -105,35 +99,28 @@ public class CardHolderEntity {
     )
     private Set<AddressEntity> addresses = new LinkedHashSet<>();
 
-    public CardHolderEntity(CardHolderModel cardHolderModel){
-        this.firstName = cardHolderModel.getFirstName();
-        this.lastName = cardHolderModel.getLastName();
-        this.dob = Date.valueOf(cardHolderModel.getDob());
-        this.phone = cardHolderModel.getPhone();
-        this.email = cardHolderModel.getEmail();
-        this.cardHolderType = cardHolderModel.getCardHolderType();
-        //this.passport = new PassportEntity(passportModel);
+    public CardHolderEntity() {
     }
 
-    public CardHolderEntity getFromModel(CardHolderModel cardHolderModel, PassportModel passportModel){
-        this.firstName = cardHolderModel.getFirstName();
-        this.lastName = cardHolderModel.getLastName();
-        this.dob = Date.valueOf(cardHolderModel.getDob());
-        this.phone = cardHolderModel.getPhone();
-        this.email = cardHolderModel.getEmail();
-        this.cardHolderType = cardHolderModel.getCardHolderType();
-        this.passport = passport.getFromModel(passportModel);
-        return this;
-    }
-
-    public CardHolderEntity getFromModel(CardHolderModel cardHolderModel){
-        this.firstName = cardHolderModel.getFirstName();
-        this.lastName = cardHolderModel.getLastName();
-        this.dob = Date.valueOf(cardHolderModel.getDob());
-        this.phone = cardHolderModel.getPhone();
-        this.email = cardHolderModel.getEmail();
-        this.cardHolderType = cardHolderModel.getCardHolderType();
-        return this;
+    public void setPersonalInfo(final PersonalInfoModel personalInfo) {
+        if (personalInfo.getFirstName() != null) {
+            setFirstName(personalInfo.getFirstName());
+        }
+        if (personalInfo.getLastName() != null) {
+            setLastName(personalInfo.getLastName());
+        }
+        if (personalInfo.getDob() != null) {
+            setDob(Date.valueOf(personalInfo.getDob()));
+        }
+        if (personalInfo.getPhone() != null) {
+            setPhone(personalInfo.getPhone());
+        }
+        if (personalInfo.getEmail() != null) {
+            setEmail(personalInfo.getEmail());
+        }
+        if (personalInfo.getCardHolderType() != null) {
+            setCardHolderType(personalInfo.getCardHolderType());
+        }
     }
 
     public void addAccount(AccountDemoEntity account) {
@@ -160,5 +147,117 @@ public class CardHolderEntity {
     public void removeAddress(AddressEntity address) {
         this.addresses.remove(address);
         address.getCardHolders().remove(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public CardHolderType getCardHolderType() {
+        return cardHolderType;
+    }
+
+    public void setCardHolderType(CardHolderType cardHolderType) {
+        this.cardHolderType = cardHolderType;
+    }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public PassportEntity getPassport() {
+        return passport;
+    }
+
+    public void setPassport(PassportEntity passport) {
+        this.passport = passport;
+    }
+
+    public Set<AccountDemoEntity> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<AccountDemoEntity> accounts) {
+        this.accounts = accounts;
+    }
+
+    public Set<CardDemoEntity> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<CardDemoEntity> cards) {
+        this.cards = cards;
+    }
+
+    public Set<AddressEntity> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<AddressEntity> addresses) {
+        this.addresses = addresses;
     }
 }
