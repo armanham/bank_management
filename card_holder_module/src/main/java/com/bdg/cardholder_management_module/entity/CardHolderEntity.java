@@ -6,6 +6,7 @@ import com.bdg.cardholder_management_module.model.PersonalInfoModel;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import java.util.Set;
 
         }
 )
-public class CardHolderEntity {
+public class CardHolderEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,17 +55,6 @@ public class CardHolderEntity {
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private CardHolderType cardHolderType;
-
-    @Column(name = "created_on")
-    @Temporal(TemporalType.DATE)
-    private Date createdOn;
-
-    @Column(name = "updated_on")
-    @Temporal(TemporalType.DATE)
-    private Date updatedOn;
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
 
     @OneToOne
     @JoinColumn(
@@ -121,6 +111,7 @@ public class CardHolderEntity {
         if (personalInfo.getCardHolderType() != null) {
             setCardHolderType(personalInfo.getCardHolderType());
         }
+        this.setUpdatedOn(Date.valueOf(LocalDate.now()));
     }
 
     public void addAccount(AccountDemoEntity account) {
@@ -142,11 +133,13 @@ public class CardHolderEntity {
     public void addAddress(AddressEntity address) {
         this.addresses.add(address);
         address.getCardHolders().add(this);
+        this.setUpdatedOn(Date.valueOf(LocalDate.now()));
     }
 
     public void removeAddress(AddressEntity address) {
         this.addresses.remove(address);
         address.getCardHolders().remove(this);
+        this.setUpdatedOn(Date.valueOf(LocalDate.now()));
     }
 
     public Long getId() {
@@ -203,30 +196,6 @@ public class CardHolderEntity {
 
     public void setCardHolderType(CardHolderType cardHolderType) {
         this.cardHolderType = cardHolderType;
-    }
-
-    public Date getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public Date getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(Date updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 
     public PassportEntity getPassport() {

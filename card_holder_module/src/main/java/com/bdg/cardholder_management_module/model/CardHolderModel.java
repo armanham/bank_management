@@ -1,5 +1,7 @@
 package com.bdg.cardholder_management_module.model;
 
+import com.bdg.cardholder_management_module.entity.CardHolderEntity;
+
 import java.util.Set;
 
 public class CardHolderModel {
