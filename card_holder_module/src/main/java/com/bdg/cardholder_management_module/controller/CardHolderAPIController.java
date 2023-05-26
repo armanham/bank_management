@@ -44,91 +44,106 @@ public class CardHolderAPIController {
     }
 
 
-    @PatchMapping(value = "/update/personalInfo/{passNo}")
-    public boolean updatePersonalInfoByPassportNo(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+    @PutMapping(value = "/activate/{serialNo}")
+    public boolean activateCardHolder(
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo,
+            @PathVariable("serialNo") String serialNumber
+    ) {
+        return cardHolderService.activateCardHolder(serialNumber);
+    }
+
+
+    @PatchMapping(value = "/update/personalInfo/{serialNo}")
+    public boolean updatePersonalInfoByPassportNo(
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
+            @Pattern(
+                    regexp = "[A-Z]{2}\\d{7}",
+                    message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
+            )
+            @PathVariable("serialNo") String serialNumber,
             @Valid @RequestBody PersonalInfoUpdateRequest personalInfoUpdateRequest
     ) {
-        return cardHolderService.updatePersonalInfoByPassportNumber(
-                passportNo,
+        return cardHolderService.updatePersonalInfoBySerialNumber(
+                serialNumber,
                 new PersonalInfoModel(personalInfoUpdateRequest)
         );
     }
 
 
-    @PatchMapping(value = "/update/personalInfo/{passNo}")
+    @PatchMapping(value = "/update/passportInfo/{serialNo}")
     public boolean updatePassportByPassportNo(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo,
+            @PathVariable("serialNo") String serialNumber,
             @Valid @RequestBody PassportUpdateRequest passportUpdateRequest
     ) {
-        return cardHolderService.updatePassportByPassportNumber(
-                passportNo,
+        return cardHolderService.updatePassportBySerialNumber(
+                serialNumber,
                 new PassportModel(passportUpdateRequest)
         );
     }
 
 
-    @DeleteMapping(value = "/delete/{passNo}")
+    @DeleteMapping(value = "/delete/{serialNo}")
     public boolean deleteByPassportNo(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo
+            @PathVariable("serialNo") String serialNumber
     ) {
-        return cardHolderService.deleteCardHolderByPassportNumber(passportNo);
+        return cardHolderService.deleteCardHolderBySerialNumber(serialNumber);
     }
 
 
-    @PutMapping(value = "/update/addAddress/{passNo}")
+    @PutMapping(value = "/update/addAddress/{serialNo}")
     public boolean addAddressOnCardHolder(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo,
+            @PathVariable("serialNo") String serialNumber,
             @Valid @RequestBody AddressCreatingRequest addressCreatingRequest
     ) {
         return cardHolderService.addAddressOnCardHolder(
-                passportNo,
+                serialNumber,
                 new AddressModel(addressCreatingRequest));
     }
 
 
-    @DeleteMapping(value = "/update/deleteAddress/{passNo}")
+    @DeleteMapping(value = "/update/deleteAddress/{serialNo}")
     public boolean deleteAddressFromCardHolder(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo,
+            @PathVariable("serialNo") String serialNumber,
             @Valid @RequestBody AddressCreatingRequest addressToDelete
     ) {
         return cardHolderService.deleteAddressFromCardHolder(
-                passportNo,
+                serialNumber,
                 new AddressModel(addressToDelete));
     }
 
@@ -165,24 +180,32 @@ public class CardHolderAPIController {
     }
 
 
-    @GetMapping(value = "/getPassNo/{passNo}")
+    @GetMapping(value = "/getPassNo/{serialNo}")
     public CardHolderResponse findByPassportNo(
-            @NotNull(message = "Passed null value as 'passportNo': ")
-            @NotBlank(message = "Passed blank value as 'passportNo': ")
-            @NotEmpty(message = "Passed empty value as 'passportNo': ")
+            @NotNull(message = "Passed null value as 'serialNumber': ")
+            @NotBlank(message = "Passed blank value as 'serialNumber': ")
+            @NotEmpty(message = "Passed empty value as 'serialNumber': ")
             @Pattern(
                     regexp = "[A-Z]{2}\\d{7}",
                     message = "'serialNumber' must have 2 uppercase letters followed by 7 digits"
             )
-            @PathVariable("passNo") String passportNo
+            @PathVariable("serialNo") String serialNumber
     ) {
-        return CardHolderResponse.getFromModel(cardHolderService.findCardHolderByPassportNo(passportNo));
+        return CardHolderResponse.getFromModel(cardHolderService.findCardHolderBySerialNumber(serialNumber));
     }
 
 
-    //TODO
-    public List<CardHolderResponse> findAllByFullName(FullNameForSearchRequest fullNameForSearchRequest) {
-        return null;
+    @GetMapping(value = "/getAllByFullName")
+    public List<CardHolderResponse> findAllByFullName(
+            @Valid @RequestBody FullNameForSearchRequest fullNameForSearchRequest
+    ) {
+        return cardHolderService.
+                findCardHoldersByFullName(
+                        fullNameForSearchRequest.firstName(),
+                        fullNameForSearchRequest.lastName())
+                .stream()
+                .map(CardHolderResponse::getFromModel)
+                .toList();
     }
 
 

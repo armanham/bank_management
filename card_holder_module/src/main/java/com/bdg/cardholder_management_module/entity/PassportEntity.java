@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Check;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "passport")
@@ -12,7 +13,7 @@ import java.sql.Date;
         name = "check_giv_date_exp_date",
         constraints = "giv_date < exp_date"
 )
-public class PassportEntity {
+public class PassportEntity extends BaseEntity {
 
     @Id
     @Column(name = "serial_no", length = 24, updatable = false)
@@ -32,16 +33,8 @@ public class PassportEntity {
     @Column(name = "given_by", nullable = false, length = 12)
     private String givenBy;
 
-    @Column(name = "created_on")
-    @Temporal(TemporalType.DATE)
-    private Date createdOn;
-
-    @Column(name = "updated_on")
-    @Temporal(TemporalType.DATE)
-    private Date updatedOn;
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
+    @OneToOne(mappedBy = "passport")
+    private CardHolderEntity cardHolder;
 
     public PassportEntity() {
     }
@@ -76,6 +69,7 @@ public class PassportEntity {
         if (passportModel.getGivenBy() != null) {
             setGivenBy(passportModel.getGivenBy());
         }
+        this.setUpdatedOn(Date.valueOf(LocalDate.now()));
     }
 
     public String getSerialNumber() {
@@ -116,29 +110,5 @@ public class PassportEntity {
 
     public void setGivenBy(String givenBy) {
         this.givenBy = givenBy;
-    }
-
-    public Date getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public Date getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(Date updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 }

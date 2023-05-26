@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,8 +56,8 @@ public class CardHolderServiceImpl implements CardHolderService {
         }
 
         PassportEntity toSavePassportEntity = new PassportEntity(passportModel);
-        toSavePassportEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-        toSavePassportEntity.setDeleted(false);
+//        toSavePassportEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+//        toSavePassportEntity.setDeleted(false);
 
         PassportEntity savedPassport = passportRepository.save(toSavePassportEntity);
 
@@ -64,8 +65,8 @@ public class CardHolderServiceImpl implements CardHolderService {
 
         cardHolderEntity.setPersonalInfo(personalInfoModel);
         cardHolderEntity.setPassport(savedPassport);
-        cardHolderEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-        cardHolderEntity.setDeleted(false);
+//        cardHolderEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+//        cardHolderEntity.setDeleted(false);
 
         cardHolderRepository.save(cardHolderEntity);
         return true;
@@ -73,9 +74,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean activateCardHolder(String passportNo) {
+    public boolean activateCardHolder(String serialNumber) {
         Optional<CardHolderEntity> optionalCardHolderEntity =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntity.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
@@ -84,14 +85,14 @@ public class CardHolderServiceImpl implements CardHolderService {
         CardHolderEntity cardHolderEntity = optionalCardHolderEntity.get();
         if (cardHolderEntity.getDeleted()) {
             cardHolderEntity.setDeleted(false);
-            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
 
             cardHolderEntity.getPassport().setDeleted(false);
-            cardHolderEntity.getPassport().setUpdatedOn(Date.valueOf(LocalDate.now()));
+//            cardHolderEntity.getPassport().setUpdatedOn(Date.valueOf(LocalDate.now()));
 
             for (AddressEntity address : cardHolderEntity.getAddresses()) {
                 address.setDeleted(false);
-                address.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//                address.setUpdatedOn(Date.valueOf(LocalDate.now()));
             }
 
             return true;
@@ -102,9 +103,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean updatePersonalInfoByPassportNumber(String passportNo, PersonalInfoModel personalInfoModel) {
+    public boolean updatePersonalInfoBySerialNumber(String serialNumber, PersonalInfoModel personalInfoModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
@@ -123,7 +124,7 @@ public class CardHolderServiceImpl implements CardHolderService {
             }
 
             cardHolderEntity.setPersonalInfo(personalInfoModel);
-            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
 
             return true;
         }
@@ -131,9 +132,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean updatePassportByPassportNumber(String passportNo, PassportModel passportModel) {
+    public boolean updatePassportBySerialNumber(String serialNumber, PassportModel passportModel) {
         Optional<PassportEntity> optionalPassportEntity =
-                passportRepository.findPassportEntityBySerialNumber(passportNo);
+                passportRepository.findPassportEntityBySerialNumber(serialNumber);
 
         if (optionalPassportEntity.isEmpty()) {
             throw new IllegalArgumentException("Passport with passed serial number not found: ");
@@ -145,9 +146,9 @@ public class CardHolderServiceImpl implements CardHolderService {
             }
 
             passportEntity.setPassportInfo(passportModel);
-            passportEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//            passportEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
 
-            cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo)
+            cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber)
                     .get()
                     .setUpdatedOn(Date.valueOf(LocalDate.now()));
         }
@@ -156,9 +157,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean deleteCardHolderByPassportNumber(String passportNo) {
+    public boolean deleteCardHolderBySerialNumber(String serialNumber) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
@@ -189,9 +190,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean addAddressOnCardHolder(String passportNo, AddressModel addressModel) {
+    public boolean addAddressOnCardHolder(String serialNumber, AddressModel addressModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
@@ -214,15 +215,15 @@ public class CardHolderServiceImpl implements CardHolderService {
                 }
 
                 cardHolderEntity.addAddress(addressEntity);
-                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
                 return true;
             } else {
                 AddressEntity toSaveAddressEntity = new AddressEntity(addressModel);
                 toSaveAddressEntity.setDeleted(false);
-                toSaveAddressEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+//                toSaveAddressEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
 
                 cardHolderEntity.addAddress(addressRepository.save(toSaveAddressEntity));
-                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
                 return true;
             }
         }
@@ -230,9 +231,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean deleteAddressFromCardHolder(String passportNo, AddressModel addressModel) {
+    public boolean deleteAddressFromCardHolder(String serialNumber, AddressModel addressModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         Optional<AddressEntity> addressEntityOptional = addressRepository.findAddressEntityByStreetAndCityAndCountry(
                 addressModel.getStreet(), addressModel.getCity(), addressModel.getCountry());
@@ -268,9 +269,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public CardHolderModel findCardHolderByPassportNo(String passportNo) {
+    public CardHolderModel findCardHolderBySerialNumber(String serialNumber) {
         Optional<CardHolderEntity> cardHolderEntityOptional =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (cardHolderEntityOptional.isEmpty()) {
             throw new IllegalArgumentException("There is no card holder with the given serial number");
@@ -339,5 +340,50 @@ public class CardHolderServiceImpl implements CardHolderService {
                         .map(AddressModel::new)
                         .collect(Collectors.toSet())
         );
+    }
+
+
+    @Override
+    public List<CardHolderModel> findCardHoldersByFullName(String firstName, String lastName) {
+
+        List<CardHolderModel> allByFirstName = cardHolderRepository
+                .findCardHolderEntitiesByFirstName(firstName)
+                .stream()
+                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+
+        List<CardHolderModel> allByLastName = cardHolderRepository
+                .findCardHolderEntitiesByLastName(lastName)
+                .stream()
+                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+
+        if (firstName.isEmpty()) {
+            return allByLastName;
+        } else if (lastName.isEmpty()) {
+            return allByFirstName;
+        } else {
+            return allByFirstName
+                    .stream()
+                    .distinct()
+                    .filter(allByLastName::contains)
+                    .collect(Collectors.toList());
+        }
     }
 }

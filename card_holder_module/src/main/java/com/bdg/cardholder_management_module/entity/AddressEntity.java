@@ -3,7 +3,6 @@ package com.bdg.cardholder_management_module.entity;
 import com.bdg.cardholder_management_module.model.AddressModel;
 import jakarta.persistence.*;
 
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -17,7 +16,7 @@ import java.util.Set;
                 )
         }
 )
-public class AddressEntity {
+public class AddressEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +31,6 @@ public class AddressEntity {
 
     @Column(name = "country", nullable = false, length = 64)
     private String country;
-
-    @Column(name = "created_on")
-    @Temporal(TemporalType.DATE)
-    private Date createdOn;
-
-    @Column(name = "updated_on")
-    @Temporal(TemporalType.DATE)
-    private Date updatedOn;
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
 
     @ManyToMany(mappedBy = "addresses")
     private Set<CardHolderEntity> cardHolders = new LinkedHashSet<>();
@@ -93,30 +81,6 @@ public class AddressEntity {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public Date getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public Date getUpdatedOn() {
-        return updatedOn;
-    }
-
-    public void setUpdatedOn(Date updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 
     public Set<CardHolderEntity> getCardHolders() {
