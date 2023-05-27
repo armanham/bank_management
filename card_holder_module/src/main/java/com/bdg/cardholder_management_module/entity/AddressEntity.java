@@ -2,13 +2,7 @@ package com.bdg.cardholder_management_module.entity;
 
 import com.bdg.cardholder_management_module.model.AddressModel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -22,10 +16,7 @@ import java.util.Set;
                 )
         }
 )
-@NoArgsConstructor
-@Getter
-@Setter
-public class AddressEntity {
+public class AddressEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,30 +32,62 @@ public class AddressEntity {
     @Column(name = "country", nullable = false, length = 64)
     private String country;
 
-    @Column(name = "created_on")
-    @Temporal(TemporalType.DATE)
-    private Date createdOn;
-
-    @Column(name = "updated_on")
-    @Temporal(TemporalType.DATE)
-    private Date updatedOn;
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
-
     @ManyToMany(mappedBy = "addresses")
     private Set<CardHolderEntity> cardHolders = new LinkedHashSet<>();
 
-    public AddressEntity(AddressModel addressModel){
+    public AddressEntity() {
+    }
+
+    public AddressEntity(AddressModel addressModel) {
         this.city = addressModel.getCity();
         this.country = addressModel.getCountry();
         this.street = addressModel.getStreet();
     }
 
-    public AddressEntity getFromModel(AddressModel addressModel){
+    public AddressEntity getFromModel(AddressModel addressModel) {
         this.street = addressModel.getStreet();
         this.city = addressModel.getCity();
         this.country = addressModel.getCountry();
         return this;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Set<CardHolderEntity> getCardHolders() {
+        return cardHolders;
+    }
+
+    public void setCardHolders(Set<CardHolderEntity> cardHolders) {
+        this.cardHolders = cardHolders;
     }
 }

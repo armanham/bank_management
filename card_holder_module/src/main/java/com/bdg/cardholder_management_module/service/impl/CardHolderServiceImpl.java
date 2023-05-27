@@ -7,19 +7,20 @@ import com.bdg.cardholder_management_module.entity.PassportEntity;
 import com.bdg.cardholder_management_module.model.AddressModel;
 import com.bdg.cardholder_management_module.model.CardHolderModel;
 import com.bdg.cardholder_management_module.model.PassportModel;
+import com.bdg.cardholder_management_module.model.PersonalInfoModel;
 import com.bdg.cardholder_management_module.repository.AddressRepository;
 import com.bdg.cardholder_management_module.repository.CardHolderRepository;
 import com.bdg.cardholder_management_module.repository.PassportRepository;
-import com.bdg.cardholder_management_module.service.AddressService;
 import com.bdg.cardholder_management_module.service.CardHolderService;
-import com.bdg.cardholder_management_module.service.PassportService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,29 +29,25 @@ public class CardHolderServiceImpl implements CardHolderService {
 
     private final CardHolderRepository cardHolderRepository;
     private final PassportRepository passportRepository;
-    private final AddressService addressService;
     private final AddressRepository addressRepository;
-    private final PassportService passportService;
+
 
     @Autowired
     public CardHolderServiceImpl(
             CardHolderRepository cardHolderRepository,
             PassportRepository passportRepository,
-            AddressService addressService,
-            AddressRepository addressRepository,
-            PassportService passportService) {
+            AddressRepository addressRepository) {
         this.cardHolderRepository = cardHolderRepository;
-        this.addressService = addressService;
         this.addressRepository = addressRepository;
-        this.passportService = passportService;
         this.passportRepository = passportRepository;
     }
 
+
     @Override
-    public boolean save(CardHolderModel cardHolderModel, PassportModel passportModel) {
+    public boolean saveCardHolder(PersonalInfoModel personalInfoModel, PassportModel passportModel) {
         if (
-                cardHolderRepository.existsCardHolderEntityByPhone(cardHolderModel.getPhone())
-                        || cardHolderRepository.existsCardHolderEntityByEmail(cardHolderModel.getEmail())) {
+                cardHolderRepository.existsCardHolderEntityByPhone(personalInfoModel.getPhone())
+                        || cardHolderRepository.existsCardHolderEntityByEmail(personalInfoModel.getEmail())) {
             throw new IllegalArgumentException("Passed phone or email already exists: ");
         }
 
@@ -58,15 +55,18 @@ public class CardHolderServiceImpl implements CardHolderService {
             throw new IllegalArgumentException("Serial number already exists: ");
         }
 
-        PassportEntity passportEntity = new PassportEntity(passportModel);
-        passportEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-        passportEntity.setIsDeleted(false);
+        PassportEntity toSavePassportEntity = new PassportEntity(passportModel);
+//        toSavePassportEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+//        toSavePassportEntity.setDeleted(false);
 
-        PassportEntity savedPassport = passportRepository.save(passportEntity);
-        CardHolderEntity cardHolderEntity = new CardHolderEntity(cardHolderModel);
+        PassportEntity savedPassport = passportRepository.save(toSavePassportEntity);
+
+        CardHolderEntity cardHolderEntity = new CardHolderEntity();
+
+        cardHolderEntity.setPersonalInfo(personalInfoModel);
         cardHolderEntity.setPassport(savedPassport);
-        cardHolderEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-        cardHolderEntity.setIsDeleted(false);
+//        cardHolderEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+//        cardHolderEntity.setDeleted(false);
 
         cardHolderRepository.save(cardHolderEntity);
         return true;
@@ -74,51 +74,115 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean updatePersonalInfo(String passportNo, CardHolderModel cardHolderModel) {
+    public boolean activateCardHolder(String serialNumber) {
+        Optional<CardHolderEntity> optionalCardHolderEntity =
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
+
+        if (optionalCardHolderEntity.isEmpty()) {
+            throw new IllegalArgumentException("No card holder with passed passport number: ");
+        }
+
+        CardHolderEntity cardHolderEntity = optionalCardHolderEntity.get();
+        if (cardHolderEntity.getDeleted()) {
+            cardHolderEntity.setDeleted(false);
+//            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+
+            cardHolderEntity.getPassport().setDeleted(false);
+//            cardHolderEntity.getPassport().setUpdatedOn(Date.valueOf(LocalDate.now()));
+
+            for (AddressEntity address : cardHolderEntity.getAddresses()) {
+                address.setDeleted(false);
+//                address.setUpdatedOn(Date.valueOf(LocalDate.now()));
+            }
+
+            return true;
+        } else {
+            throw new IllegalArgumentException("Card holder is already active: ");
+        }
+    }
+
+
+    @Override
+    public boolean updatePersonalInfoBySerialNumber(String serialNumber, PersonalInfoModel personalInfoModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
         } else {
             CardHolderEntity cardHolderEntity = optionalCardHolderEntityByPassportNumber.get();
 
-            if (!cardHolderModel.getDob().equals(cardHolderEntity.getDob().toString())){
-                throw new IllegalArgumentException("Date of birth is not updatable: ");
+            if (cardHolderEntity.getDeleted()) {
+                throw new IllegalArgumentException("Card holder is already deleted with passed passport number: ");
             }
-            if (cardHolderRepository.existsCardHolderEntityByEmail(cardHolderModel.getEmail())){
+
+            if (cardHolderRepository.existsCardHolderEntityByEmail(personalInfoModel.getEmail())) {
                 throw new IllegalArgumentException("Email already exists: ");
             }
-            if (cardHolderRepository.existsCardHolderEntityByPhone(cardHolderModel.getPhone())){
+            if (cardHolderRepository.existsCardHolderEntityByPhone(personalInfoModel.getPhone())) {
                 throw new IllegalArgumentException("Phone number already exists: ");
             }
 
-            if (cardHolderEntity.getIsDeleted()) {
-                cardHolderEntity.setIsDeleted(false);
-            }
-            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
-            cardHolderEntity.getFromModel(cardHolderModel);
+            cardHolderEntity.setPersonalInfo(personalInfoModel);
+//            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
 
             return true;
         }
     }
 
+
     @Override
-    public boolean delete(String passportNo) {
+    public boolean updatePassportBySerialNumber(String serialNumber, PassportModel passportModel) {
+        Optional<PassportEntity> optionalPassportEntity =
+                passportRepository.findPassportEntityBySerialNumber(serialNumber);
+
+        if (optionalPassportEntity.isEmpty()) {
+            throw new IllegalArgumentException("Passport with passed serial number not found: ");
+        } else {
+            PassportEntity passportEntity = optionalPassportEntity.get();
+
+            if (passportEntity.getDeleted()) {
+                throw new IllegalArgumentException("Passport with passed serial number is no longer active: ");
+            }
+
+            passportEntity.setPassportInfo(passportModel);
+//            passportEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+
+            cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber)
+                    .get()
+                    .setUpdatedOn(Date.valueOf(LocalDate.now()));
+        }
+        return true;
+    }
+
+
+    @Override
+    public boolean deleteCardHolderBySerialNumber(String serialNumber) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
         } else {
             CardHolderEntity cardHolderEntity = optionalCardHolderEntityByPassportNumber.get();
-            if (cardHolderEntity.getIsDeleted()) {
+
+            if (cardHolderEntity.getDeleted()) {
                 throw new IllegalArgumentException("Card holder is already deleted with passed passport number: ");
             }
-            cardHolderEntity.setIsDeleted(true);
-            cardHolderEntity.getPassport().setIsDeleted(true);
 
-//            if(addressRepository.countOfAddressInCHAByAddressId(cardHolderEntity.getAddresses().))
+            cardHolderEntity.getPassport().setDeleted(true);
+            cardHolderEntity.getPassport().setUpdatedOn(Date.valueOf(LocalDate.now()));
+            cardHolderEntity.setDeleted(true);
+            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+
+            for (AddressEntity addressEntity : cardHolderEntity.getAddresses()) {
+                if (cardHolderRepository.occurrenceInCHA(Math.toIntExact(addressEntity.getId())) == 1) {
+                    addressEntity.setDeleted(true);
+                    addressEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+                }
+            }
+            cardHolderRepository.
+                    deleteCardHolderWithAddressFromCHA(cardHolderEntity.getId());
 
             return true;
         }
@@ -126,15 +190,16 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
-    public boolean addAddress(String passportNo, AddressModel addressModel) {
+    public boolean addAddressOnCardHolder(String serialNumber, AddressModel addressModel) {
         Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(passportNo);
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
 
         if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
             throw new IllegalArgumentException("No card holder with passed passport number: ");
         } else {
             CardHolderEntity cardHolderEntity = optionalCardHolderEntityByPassportNumber.get();
-            if (cardHolderEntity.getIsDeleted()) {
+
+            if (cardHolderEntity.getDeleted()) {
                 throw new IllegalArgumentException("Card holder is already deleted with passed passport number: ");
             }
 
@@ -144,23 +209,181 @@ public class CardHolderServiceImpl implements CardHolderService {
 
             if (addressEntityOptional.isPresent()) {
                 AddressEntity addressEntity = addressEntityOptional.get();
-                if (addressEntity.getIsDeleted()) {
-                    addressEntity.setIsDeleted(false);
+                if (addressEntity.getDeleted()) {
+                    addressEntity.setDeleted(false);
                     addressEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
                 }
 
                 cardHolderEntity.addAddress(addressEntity);
-                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
                 return true;
             } else {
                 AddressEntity toSaveAddressEntity = new AddressEntity(addressModel);
-                toSaveAddressEntity.setIsDeleted(false);
-                toSaveAddressEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
+                toSaveAddressEntity.setDeleted(false);
+//                toSaveAddressEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
 
                 cardHolderEntity.addAddress(addressRepository.save(toSaveAddressEntity));
-                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+//                cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
                 return true;
             }
+        }
+    }
+
+
+    @Override
+    public boolean deleteAddressFromCardHolder(String serialNumber, AddressModel addressModel) {
+        Optional<CardHolderEntity> optionalCardHolderEntityByPassportNumber =
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
+
+        Optional<AddressEntity> addressEntityOptional = addressRepository.findAddressEntityByStreetAndCityAndCountry(
+                addressModel.getStreet(), addressModel.getCity(), addressModel.getCountry());
+
+        if (optionalCardHolderEntityByPassportNumber.isEmpty()) {
+            throw new IllegalArgumentException("No card holder with passed passport number: ");
+        }
+
+        CardHolderEntity cardHolderEntity = optionalCardHolderEntityByPassportNumber.get();
+        if (cardHolderEntity.getDeleted()) {
+            throw new IllegalArgumentException("Card holder with passed passport number is no longer active: ");
+        }
+
+        if (addressEntityOptional.isEmpty()) {
+            throw new IllegalArgumentException("Address does not exist: ");
+        }
+
+        AddressEntity addressEntity = addressEntityOptional.get();
+        if (addressEntity.getDeleted()) {
+            throw new IllegalArgumentException("Address is no longer active: ");
+        }
+
+        if (cardHolderEntity.getAddresses().remove(addressEntity)) {
+            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+        }
+
+        if (addressEntity.getCardHolders().size() == 1) {
+            addressEntity.setDeleted(true);
+            addressEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
+        }
+        return true;
+    }
+
+
+    @Override
+    public CardHolderModel findCardHolderBySerialNumber(String serialNumber) {
+        Optional<CardHolderEntity> cardHolderEntityOptional =
+                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
+
+        if (cardHolderEntityOptional.isEmpty()) {
+            throw new IllegalArgumentException("There is no card holder with the given serial number");
+        }
+
+        CardHolderEntity cardHolderEntity = cardHolderEntityOptional.get();
+        if (cardHolderEntity.getDeleted()) {
+            throw new IllegalArgumentException("Card Holder with the given serial number is no longer active");
+        }
+
+        return new CardHolderModel(
+                new PersonalInfoModel(cardHolderEntity),
+                new PassportModel(cardHolderEntity.getPassport()),
+                cardHolderEntity.getAddresses()
+                        .stream()
+                        .map(AddressModel::new)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+
+    @Override
+    public CardHolderModel findCardHolderByPhone(String phone) {
+        Optional<CardHolderEntity> cardHolderEntityOptional =
+                cardHolderRepository.findCardHolderEntityByPhone(phone);
+
+        if (cardHolderEntityOptional.isEmpty()) {
+            throw new IllegalArgumentException("There is no card holder with the given phone number");
+        }
+
+        CardHolderEntity cardHolderEntity = cardHolderEntityOptional.get();
+        if (cardHolderEntity.getDeleted()) {
+            throw new IllegalArgumentException("Card Holder with the given phone number is no longer active");
+        }
+
+        return new CardHolderModel(
+                new PersonalInfoModel(cardHolderEntity),
+                new PassportModel(cardHolderEntity.getPassport()),
+                cardHolderEntity.getAddresses()
+                        .stream()
+                        .map(AddressModel::new)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+
+    @Override
+    public CardHolderModel findCardHolderByEmail(String email) {
+        Optional<CardHolderEntity> cardHolderEntityOptional =
+                cardHolderRepository.findCardHolderEntityByEmail(email);
+
+        if (cardHolderEntityOptional.isEmpty()) {
+            throw new IllegalArgumentException("There is no card holder with the given email");
+        }
+
+        CardHolderEntity cardHolderEntity = cardHolderEntityOptional.get();
+        if (cardHolderEntity.getDeleted()) {
+            throw new IllegalArgumentException("Card Holder with the given email is no longer active");
+        }
+
+        return new CardHolderModel(
+                new PersonalInfoModel(cardHolderEntity),
+                new PassportModel(cardHolderEntity.getPassport()),
+                cardHolderEntity.getAddresses()
+                        .stream()
+                        .map(AddressModel::new)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+
+    @Override
+    public List<CardHolderModel> findCardHoldersByFullName(String firstName, String lastName) {
+
+        List<CardHolderModel> allByFirstName = cardHolderRepository
+                .findCardHolderEntitiesByFirstName(firstName)
+                .stream()
+                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+
+        List<CardHolderModel> allByLastName = cardHolderRepository
+                .findCardHolderEntitiesByLastName(lastName)
+                .stream()
+                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+
+        if (firstName.isEmpty()) {
+            return allByLastName;
+        } else if (lastName.isEmpty()) {
+            return allByFirstName;
+        } else {
+            return allByFirstName
+                    .stream()
+                    .distinct()
+                    .filter(allByLastName::contains)
+                    .collect(Collectors.toList());
         }
     }
 }
