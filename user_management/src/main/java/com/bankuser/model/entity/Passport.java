@@ -1,20 +1,19 @@
 package com.bankuser.model.entity;
 
 import com.bankuser.model.proxy.PassportP;
-import jakarta.persistence.*;
 
 import java.sql.Date;
 
 @Entity
-@Table
+@Table(name = "passport")
 public class Passport {
     
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "user", unique = true)
-    private User user;
+    @JoinColumn(name = "user_entity")
+    private UserEntity userEntity;
     @Column(name = "number", nullable = false, length = 15)
     private String number;
     @Column(name = "issue", nullable = false)
@@ -28,8 +27,8 @@ public class Passport {
 
     public Passport(){}
 
-    public Passport(User user, String number, Date issue, Date expired, String authority, String gender) {
-        this.user = user;
+    public Passport(UserEntity user, String number, Date issue, Date expired, String authority, String gender) {
+        this.userEntity = user;
         this.number = number;
         this.issue = issue;
         this.expired = expired;
@@ -38,7 +37,7 @@ public class Passport {
     }
 
     public Passport(final Passport passport) {
-        this.user = passport.user;
+        this.userEntity = passport.userEntity;
         this.number = passport.number;
         this.issue = passport.issue;
         this.expired = passport.expired;
@@ -47,7 +46,7 @@ public class Passport {
     }
 
     public Passport(final PassportP passportP) {
-        this.user = new User(passportP.getUser());
+        this.userEntity = new UserEntity(passportP.getUser());
         this.number = passportP.getNumber();
         this.issue = passportP.getIssue();
         this.expired = passportP.getExpired();
@@ -63,12 +62,12 @@ public class Passport {
         return id;
     }
     
-    public User getUser () {
-        return user;
+    public UserEntity getUser () {
+        return userEntity;
     }
     
-    public void setUser (User user) {
-        this.user = user;
+    public void setUser (UserEntity user) {
+        this.userEntity = user;
     }
     
     public String getNumber () {

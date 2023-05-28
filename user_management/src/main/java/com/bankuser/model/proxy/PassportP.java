@@ -5,7 +5,6 @@ import com.bankuser.model.entity.Passport;
 import java.sql.Date;
 
 public class PassportP {
-    private Long   id;
     private UserP  userP;
     private String number;
     private Date issue;
@@ -34,21 +33,12 @@ public class PassportP {
     }
 
     public PassportP(final Passport passport) {
-        this.id = passport.getId();
         this.authority = passport.getAuthority();
         this.expired = passport.getExpired();
         this.issue = passport.getIssue();
         this.number = passport.getNumber();
         this.userP = new UserP(passport.getUser());
         this.genderP = passport.getGender();
-    }
-
-    public void setId (Long id) {
-        this.id = id;
-    }
-    
-    public Long getId () {
-        return id;
     }
     
     public UserP getUser () {

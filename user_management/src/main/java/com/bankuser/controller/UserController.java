@@ -1,18 +1,26 @@
 package com.bankuser.controller;
 
+import com.bankuser.model.proxy.AddressP;
+import com.bankuser.model.proxy.PassportP;
 import com.bankuser.model.proxy.UserP;
+import com.bankuser.service.PassportService;
 import com.bankuser.service.UserService;
 import com.bankuser.validation.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping (value = "/User")
 public class UserController {
     private       UserService userService;
+    
+    private PassportService passportService;
     private Validation validation;
     @Autowired
     public UserController (UserService userService, Validation validation) {
@@ -22,12 +30,25 @@ public class UserController {
 
     public UserController (){}
     
-    @PutMapping (value = "/signup")
-    public ResponseEntity <UserP> signUp(UserP userP) {
-        if (validation.isValidUsername(userP.getUserName()) && validation.isValidEmail(userP.getEmail()) && validation.isValidPassword(userP.getPassword())){
+    @PostMapping (value = "/signup")
+    public ResponseEntity <UserP> signUp(@RequestBody UserP userP, @RequestBody PassportP passportP) {
+        //if (validation.isValidUsername(userP.getUsername()) && validation.isValidEmail(userP.getEmail()) && validation.isValidPassword(userP.getPassword())){
             return userService.signup(userP);
-        }
-        return new ResponseEntity<UserP>(HttpStatusCode.valueOf(501));
+        //}
+        //return new ResponseEntity<UserP>(HttpStatusCode.valueOf(501));
+    }
+    
+    @GetMapping (value = "/signup/Loka")
+    public ResponseEntity <UserP> signUp() {
+        UserP userP = new UserP();
+        AddressP addressP = new AddressP("Armenia", "Yerevan");
+        userP.setAddress(addressP);
+        userP.setPassword("Lobzik");
+        userP.setBirthDate(Date.valueOf("1999-02-02"));
+        //if (validation.isValidUsername(userP.getUsername()) && validation.isValidEmail(userP.getEmail()) && validation.isValidPassword(userP.getPassword())){
+        return userService.signup(userP);
+        //}
+        //return new ResponseEntity<UserP>(HttpStatusCode.valueOf(501));
     }
     
     @PostMapping (value = "/signin")
@@ -42,6 +63,17 @@ public class UserController {
             return userService.signIn(login, password, 3);
         }
         return new ResponseEntity<UserP>(HttpStatusCode.valueOf(501));
+    }
+    
+    @GetMapping (value = "/hi")
+    public ResponseEntity<UserP> hi(){
+        AddressP addressP = new AddressP("Armenia", "Yerevan");
+        PassportP passportP = new PassportP();
+        UserP user = new UserP();
+        user.setAddress(addressP);
+        List<PassportP> list = new ArrayList <>();
+        list.add(passportP);
+        return new ResponseEntity <>(user, HttpStatusCode.valueOf(201));
     }
     
     @PostMapping (value = "/editinfo")

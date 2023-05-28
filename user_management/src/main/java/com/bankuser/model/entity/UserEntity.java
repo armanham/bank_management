@@ -1,16 +1,15 @@
-package com.user_management.model.entity;
+package com.bankuser.model.entity;
 
-import com.user_management.model.proxy.PassportP;
-import com.user_management.model.proxy.UserP;
-import jakarta.persistence.*;
+import com.bankuser.model.proxy.PassportP;
+import com.bankuser.model.proxy.UserP;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "User")
-public class User {
+@Table(name = "user_entity")
+public class UserEntity {
     
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
@@ -36,12 +35,9 @@ public class User {
     private String phoneNumber;
     @Column(name = "flag", nullable = false)
     private Boolean flag;
-    @OneToMany(mappedBy = "user")
-    private List<Passport> passports;
+    public UserEntity(){}
 
-    public User(){}
-
-    public User(final UserP userP) {
+    public UserEntity(final UserP userP) {
         
         this.gender = userP.getGender();
         this.address = new Address(userP.getAddress());
@@ -49,8 +45,7 @@ public class User {
         this.birthDate = userP.getBirthDate();
         this.firstName = userP.getFirstName();
         this.lastName = userP.getLastName();
-        this.passports = castListPassports(userP.getPassports());
-        this.username = userP.getUserName();
+        this.username = userP.getUsername();
         this.password = userP.getPassword();
         this.phoneNumber = userP.getPhoneNumber();
         this.flag = true;
@@ -143,14 +138,6 @@ public class User {
     
     public void setPhoneNumber (String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-    
-    public List <Passport> getPassports () {
-        return passports;
-    }
-    
-    public void setPassports (List <Passport> passports) {
-        this.passports = passports;
     }
     
     public Boolean getFlag () {

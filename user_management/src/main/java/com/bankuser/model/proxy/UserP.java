@@ -1,7 +1,7 @@
 package com.bankuser.model.proxy;
 
 import com.bankuser.model.entity.Passport;
-import com.bankuser.model.entity.User;
+import com.bankuser.model.entity.UserEntity;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -14,33 +14,31 @@ public class UserP {
     private Date             birthDate;
     private String           genderP;
     private AddressP         addressP;
-    private String           userName;
+    private String           username;
     private String           email;
     private String           password;
     private String           phoneNumber;
-    private List <PassportP> passportPS;
     
     public UserP () {}
     
-    public UserP (final User USER) {
+    public UserP (final UserEntity USER) {
         this.firstName = USER.getFirstName();
         this.lastName = USER.getLastName();
-        this.userName = USER.getUsername();
+        this.username = USER.getUsername();
         this.addressP = new AddressP(USER.getAddress());
         this.email = USER.getEmail();
         this.birthDate = USER.getBirthDate();
         this.genderP = USER.getGender();
-        this.passportPS = castToAddressP(USER.getPassports());
         this.password = USER.getPassword();
         this.phoneNumber = USER.getPhoneNumber();
     }
     
-    public String getUserName () {
-        return userName;
+    public String getUsername () {
+        return username;
     }
     
-    public void setUserName (String userName) {
-        this.userName = userName;
+    public void setUsername (String username) {
+        this.username = username;
     }
     
     public String getFirstName () {
@@ -106,14 +104,6 @@ public class UserP {
     
     public void setPhoneNumber (String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-    
-    public List <PassportP> getPassports () {
-        return passportPS;
-    }
-    
-    public void setPassports (List <PassportP> passportPS) {
-        this.passportPS = passportPS;
     }
     
     private List <PassportP> castToAddressP (final List <Passport> passports) {
