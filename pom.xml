@@ -20,7 +20,7 @@
         <module>account_management_module</module>
         <module>card_holder_module</module>
         <module>exporter_management_module</module>
-        <module>user_management_module</module>
+        <module>user_management</module>
     </modules>
 
     <properties>
