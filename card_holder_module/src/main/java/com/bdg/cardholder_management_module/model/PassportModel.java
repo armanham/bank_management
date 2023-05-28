@@ -1,13 +1,9 @@
 package com.bdg.cardholder_management_module.model;
 
-import com.bdg.cardholder_management_module.request.PassportRequest;
-import lombok.Getter;
-import lombok.Setter;
+import com.bdg.cardholder_management_module.entity.PassportEntity;
+import com.bdg.cardholder_management_module.request.create.PassportCreatingRequest;
+import com.bdg.cardholder_management_module.request.update.PassportUpdateRequest;
 
-import java.sql.Date;
-
-@Getter
-@Setter
 public final class PassportModel {
 
     private String serialNumber;
@@ -32,21 +28,75 @@ public final class PassportModel {
         this.givenBy = givenBy;
     }
 
-    public PassportModel(PassportRequest passportRequest){
-        this.serialNumber = passportRequest.serialNumber();
-        this.nationality = passportRequest.nationality();
-        this.givenDate = passportRequest.givenDate();
-        this.expireDate = passportRequest.expireDate();
-        this.givenBy = passportRequest.givenBy();
+    public PassportModel(PassportCreatingRequest passportCreatingRequest) {
+        this.serialNumber = passportCreatingRequest.serialNumber();
+        this.nationality = passportCreatingRequest.nationality();
+        this.givenDate = passportCreatingRequest.givenDate();
+        this.expireDate = passportCreatingRequest.expireDate();
+        this.givenBy = passportCreatingRequest.givenBy();
     }
-    public PassportModel getFromRequest(PassportRequest passportRequest){
-        this.serialNumber = passportRequest.serialNumber();
-        this.nationality = passportRequest.nationality();
-        this.givenDate = passportRequest.givenDate();
-        this.expireDate = passportRequest.expireDate();
-        this.givenBy = passportRequest.givenBy();
+
+    public PassportModel getFromRequest(PassportCreatingRequest passportCreatingRequest) {
+        this.serialNumber = passportCreatingRequest.serialNumber();
+        this.nationality = passportCreatingRequest.nationality();
+        this.givenDate = passportCreatingRequest.givenDate();
+        this.expireDate = passportCreatingRequest.expireDate();
+        this.givenBy = passportCreatingRequest.givenBy();
         return this;
     }
 
+    public PassportModel(PassportEntity passportEntity) {
+        this.serialNumber = passportEntity.getSerialNumber();
+        this.nationality = passportEntity.getNationality();
+        this.givenDate = passportEntity.getGivenDate().toString();
+        this.expireDate = passportEntity.getExpireDate().toString();
+        this.givenBy = passportEntity.getGivenBy();
+    }
 
+    public PassportModel(PassportUpdateRequest passportUpdateRequest){
+        this.nationality = passportUpdateRequest.nationality();
+        this.givenDate = passportUpdateRequest.givenDate();
+        this.expireDate = passportUpdateRequest.expireDate();
+        this.givenBy = passportUpdateRequest.givenBy();
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getGivenDate() {
+        return givenDate;
+    }
+
+    public void setGivenDate(String givenDate) {
+        this.givenDate = givenDate;
+    }
+
+    public String getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(String expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public String getGivenBy() {
+        return givenBy;
+    }
+
+    public void setGivenBy(String givenBy) {
+        this.givenBy = givenBy;
+    }
 }
