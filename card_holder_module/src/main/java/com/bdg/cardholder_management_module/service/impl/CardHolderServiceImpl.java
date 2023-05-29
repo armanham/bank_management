@@ -1,13 +1,13 @@
 package com.bdg.cardholder_management_module.service.impl;
 
 
-import com.bdg.cardholder_management_module.entity.AddressEntity;
-import com.bdg.cardholder_management_module.entity.CardHolderEntity;
-import com.bdg.cardholder_management_module.entity.PassportEntity;
-import com.bdg.cardholder_management_module.model.AddressModel;
-import com.bdg.cardholder_management_module.model.CardHolderModel;
-import com.bdg.cardholder_management_module.model.PassportModel;
-import com.bdg.cardholder_management_module.model.PersonalInfoModel;
+import com.bdg.cardholder_management_module.model.dto.AddressModel;
+import com.bdg.cardholder_management_module.model.dto.CardHolderModel;
+import com.bdg.cardholder_management_module.model.dto.PassportModel;
+import com.bdg.cardholder_management_module.model.dto.PersonalInfoModel;
+import com.bdg.cardholder_management_module.model.entity.AddressEntity;
+import com.bdg.cardholder_management_module.model.entity.CardHolderEntity;
+import com.bdg.cardholder_management_module.model.entity.PassportEntity;
 import com.bdg.cardholder_management_module.repository.AddressRepository;
 import com.bdg.cardholder_management_module.repository.CardHolderRepository;
 import com.bdg.cardholder_management_module.repository.PassportRepository;
@@ -56,17 +56,11 @@ public class CardHolderServiceImpl implements CardHolderService {
         }
 
         PassportEntity toSavePassportEntity = new PassportEntity(passportModel);
-//        toSavePassportEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-//        toSavePassportEntity.setDeleted(false);
-
         PassportEntity savedPassport = passportRepository.save(toSavePassportEntity);
 
         CardHolderEntity cardHolderEntity = new CardHolderEntity();
-
-        cardHolderEntity.setPersonalInfo(personalInfoModel);
+        cardHolderEntity.initializePersonalInfo(personalInfoModel);
         cardHolderEntity.setPassport(savedPassport);
-//        cardHolderEntity.setCreatedOn(Date.valueOf(LocalDate.now()));
-//        cardHolderEntity.setDeleted(false);
 
         cardHolderRepository.save(cardHolderEntity);
         return true;
@@ -75,30 +69,24 @@ public class CardHolderServiceImpl implements CardHolderService {
 
     @Override
     public boolean activateCardHolder(String serialNumber) {
-        Optional<CardHolderEntity> optionalCardHolderEntity =
-                cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
-
-        if (optionalCardHolderEntity.isEmpty()) {
-            throw new IllegalArgumentException("No card holder with passed passport number: ");
-        }
-
-        CardHolderEntity cardHolderEntity = optionalCardHolderEntity.get();
-        if (cardHolderEntity.getDeleted()) {
-            cardHolderEntity.setDeleted(false);
-//            cardHolderEntity.setUpdatedOn(Date.valueOf(LocalDate.now()));
-
-            cardHolderEntity.getPassport().setDeleted(false);
-//            cardHolderEntity.getPassport().setUpdatedOn(Date.valueOf(LocalDate.now()));
-
-            for (AddressEntity address : cardHolderEntity.getAddresses()) {
-                address.setDeleted(false);
-//                address.setUpdatedOn(Date.valueOf(LocalDate.now()));
+        CardHolderEntity cardHolderEntity = null;
+        for (CardHolderEntity deletedCardHolder : cardHolderRepository.findDeletedCardHolders()) {
+            if (deletedCardHolder.getPassport().getSerialNumber().equals(serialNumber)) {
+                cardHolderEntity = deletedCardHolder;
+                break;
             }
-
-            return true;
-        } else {
-            throw new IllegalArgumentException("Card holder is already active: ");
         }
+
+        if (cardHolderEntity == null) {
+            throw new IllegalArgumentException("No inactive card holder with passed passport number: ");
+        }
+
+        cardHolderEntity.setDeleted(false);
+        cardHolderEntity.getPassport().setDeleted(false);
+        for (AddressEntity address : cardHolderEntity.getAddresses()) {
+            address.setDeleted(false);
+        }
+        return true;
     }
 
 
@@ -269,6 +257,40 @@ public class CardHolderServiceImpl implements CardHolderService {
 
 
     @Override
+    public List<CardHolderModel> findDeletedCardHolders() {
+        return cardHolderRepository
+                .findDeletedCardHolders()
+                .stream()
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+    }
+
+
+    @Override
+    public List<CardHolderModel> findActiveCardHolders() {
+        return cardHolderRepository
+                .findActiveCardHolders()
+                .stream()
+                .map(cardHolderEntity -> new CardHolderModel(
+                        new PersonalInfoModel(cardHolderEntity),
+                        new PassportModel(cardHolderEntity.getPassport()),
+                        cardHolderEntity.getAddresses()
+                                .stream()
+                                .map(AddressModel::new)
+                                .collect(Collectors.toSet())
+                ))
+                .toList();
+    }
+
+
+    @Override
     public CardHolderModel findCardHolderBySerialNumber(String serialNumber) {
         Optional<CardHolderEntity> cardHolderEntityOptional =
                 cardHolderRepository.findCardHolderEntityByPassport_SerialNumber(serialNumber);
@@ -345,11 +367,9 @@ public class CardHolderServiceImpl implements CardHolderService {
 
     @Override
     public List<CardHolderModel> findCardHoldersByFullName(String firstName, String lastName) {
-
-        List<CardHolderModel> allByFirstName = cardHolderRepository
-                .findCardHolderEntitiesByFirstName(firstName)
+        return cardHolderRepository.
+                findCardHolderEntitiesLikeFirstAndLastName(firstName, lastName)
                 .stream()
-                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
                 .map(cardHolderEntity -> new CardHolderModel(
                         new PersonalInfoModel(cardHolderEntity),
                         new PassportModel(cardHolderEntity.getPassport()),
@@ -359,31 +379,5 @@ public class CardHolderServiceImpl implements CardHolderService {
                                 .collect(Collectors.toSet())
                 ))
                 .toList();
-
-        List<CardHolderModel> allByLastName = cardHolderRepository
-                .findCardHolderEntitiesByLastName(lastName)
-                .stream()
-                .filter(cardHolderEntity -> !cardHolderEntity.getDeleted())
-                .map(cardHolderEntity -> new CardHolderModel(
-                        new PersonalInfoModel(cardHolderEntity),
-                        new PassportModel(cardHolderEntity.getPassport()),
-                        cardHolderEntity.getAddresses()
-                                .stream()
-                                .map(AddressModel::new)
-                                .collect(Collectors.toSet())
-                ))
-                .toList();
-
-        if (firstName.isEmpty()) {
-            return allByLastName;
-        } else if (lastName.isEmpty()) {
-            return allByFirstName;
-        } else {
-            return allByFirstName
-                    .stream()
-                    .distinct()
-                    .filter(allByLastName::contains)
-                    .collect(Collectors.toList());
-        }
     }
 }
