@@ -11,6 +11,8 @@ import com.bdg.cardholder_management_module.request.update.PassportUpdateRequest
 import com.bdg.cardholder_management_module.request.update.PersonalInfoUpdateRequest;
 import com.bdg.cardholder_management_module.response.CardHolderResponse;
 import com.bdg.cardholder_management_module.service.CardHolderService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,8 @@ public class CardHolderAPIController {
         this.cardHolderService = cardHolderService;
     }
 
-
+    @Operation(
+    		description = "Creating new card holder")
     @PostMapping(value = "/new")
     public boolean addCardHolder(
             @Valid @RequestBody CardHolderCreatingRequest cardHolderCreatingRequest
@@ -44,6 +47,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Activate Card Holder")
     @PutMapping(value = "/activate/{serialNo}")
     public boolean activateCardHolder(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -59,6 +64,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Updating personal info by Passport number")
     @PatchMapping(value = "/update/personalInfo/{serialNo}")
     public boolean updatePersonalInfoByPassportNo(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -78,6 +85,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Update passport by passport number")
     @PatchMapping(value = "/update/passportInfo/{serialNo}")
     public boolean updatePassportByPassportNo(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -97,6 +106,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Deletes passport by passport number")
     @DeleteMapping(value = "/delete/{serialNo}")
     public boolean deleteByPassportNo(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -112,6 +123,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Add address on card holder")
     @PutMapping(value = "/update/addAddress/{serialNo}")
     public boolean addAddressOnCardHolder(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -130,6 +143,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Deletes address from card holder")
     @DeleteMapping(value = "/update/deleteAddress/{serialNo}")
     public boolean deleteAddressFromCardHolder(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -148,6 +163,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Find card holder by Email")
     @GetMapping(value = "/getByEmail/{email}")
     public CardHolderResponse findCardHolderByEmail(
             @NotNull(message = "Passed null value as 'email': ")
@@ -160,6 +177,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "find Card Holder by phone")
     @GetMapping(value = "/getByPhone/{phone}")
     public CardHolderResponse findCardHolderByPhone(
             @NotNull(message = "Passed null value as 'phone': ")
@@ -180,6 +199,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Find Card Holder by serial number")
     @GetMapping(value = "/getPassNo/{serialNo}")
     public CardHolderResponse findByPassportNo(
             @NotNull(message = "Passed null value as 'serialNumber': ")
@@ -195,6 +216,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+    		description = "Get all users by Full Name")
     @GetMapping(value = "/getAllByFullName")
     public List<CardHolderResponse> findAllByFullName(
             @Valid @RequestBody FullNameForSearchRequest fullNameForSearchRequest
