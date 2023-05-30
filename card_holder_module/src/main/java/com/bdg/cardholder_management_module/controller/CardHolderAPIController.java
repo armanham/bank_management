@@ -12,6 +12,7 @@ import com.bdg.cardholder_management_module.model.request.update.PassportUpdateR
 import com.bdg.cardholder_management_module.model.request.update.PersonalInfoUpdateRequest;
 import com.bdg.cardholder_management_module.model.response.CardHolderResponse;
 import com.bdg.cardholder_management_module.service.CardHolderService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -21,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.bdg.cardholder_management_module.check.pattern.Pattern.PASSPORT_NO_PATTERN;
 import static com.bdg.cardholder_management_module.controller.Endpoints.*;
-import static com.bdg.cardholder_management_module.check.pattern.Pattern.*;
 
 @RestController
 @RequestMapping(value = API_CARD_HOLDER)
@@ -38,6 +39,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Creating new card holder")
     @PostMapping(value = CARDHOLDER_NEW)
     public boolean addCardHolder(
             @Valid @RequestBody CardHolderCreatingRequest cardHolderCreatingRequest
@@ -49,6 +52,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Activate Card Holder")
     @PutMapping(value = CARDHOLDER_ACTIVATE)
     public boolean activateCardHolder(
             @NotNullEmptyBlankString
@@ -62,6 +67,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Updating personal info by Passport number")
     @PatchMapping(value = CARDHOLDER_UPDATE_PERSONAL_INFO_BY_PASSPORT_NO)
     public boolean updatePersonalInfoByPassportNo(
             @NotNullEmptyBlankString
@@ -79,6 +86,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Update passport by passport number")
     @PatchMapping(value = CARDHOLDER_UPDATE_PASSPORT_BY_PASSPORT_NO)
     public boolean updatePassportByPassportNo(
             @NotNullEmptyBlankString
@@ -96,6 +105,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Deletes passport by passport number")
     @DeleteMapping(value = DELETE_BY_PASSPORT_NO)
     public boolean deleteByPassportNo(
             @NotNullEmptyBlankString
@@ -109,6 +120,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Add address on card holder")
     @PutMapping(value = ADD_ADDRESS_ON_CARD_HOLDER)
     public boolean addAddressOnCardHolder(
             @NotNullEmptyBlankString
@@ -125,6 +138,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Deletes address from card holder")
     @DeleteMapping(value = DELETE_ADDRESS_FROM_CARD_HOLDER)
     public boolean deleteAddressFromCardHolder(
             @NotNullEmptyBlankString
@@ -141,6 +156,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Find card holder by Email")
     @GetMapping(value = FIND_BY_EMAIL)
     public CardHolderResponse findCardHolderByEmail(
             @NotNullEmptyBlankString
@@ -151,6 +168,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "find Card Holder by phone")
     @GetMapping(value = FIND_BY_PHONE)
     public CardHolderResponse findCardHolderByPhone(
             @NotNullEmptyBlankString
@@ -169,6 +188,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Find Card Holder by serial number")
     @GetMapping(value = FIND_BY_PASS_NO)
     public CardHolderResponse findByPassportNo(
             @NotNullEmptyBlankString
@@ -182,6 +203,8 @@ public class CardHolderAPIController {
     }
 
 
+    @Operation(
+            description = "Get all users by Full Name")
     @GetMapping(value = FIND_ALL_BY_FULL_NAME)
     public List<CardHolderResponse> findAllByFullName(
             @Valid @RequestBody FullNameForSearchRequest fullNameForSearchRequest
