@@ -1,5 +1,6 @@
 package com.bankuser.repository;
 
+
 import com.bankuser.model.entity.UserEntity;
 import com.bankuser.model.proxy.UserP;
 import org.springframework.data.jpa.repository.JpaRepository;
