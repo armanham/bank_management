@@ -1,6 +1,6 @@
 package com.bdg.cardholder_management_module.repository;
 
-import com.bdg.cardholder_management_module.entity.CardHolderEntity;
+import com.bdg.cardholder_management_module.model.entity.CardHolderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -48,4 +48,23 @@ public interface CardHolderRepository extends JpaRepository<CardHolderEntity, Lo
     int occurrenceInCHA(
             @Param("address_id") int addressId
     );
+
+    @Query(value = "select c from CardHolderEntity as c where c.firstName like CONCAT(:firstName, '%') ")
+    List<CardHolderEntity> findCardHolderEntitiesLikeFirstName(@Param("firstName") String firstName);
+
+    @Query(value = "select c from CardHolderEntity as c where c.lastName like CONCAT(:lastName, '%') ")
+    List<CardHolderEntity> findCardHolderEntitiesLikeLastName(@Param("lastName") String lastName);
+
+    @Query(value = "select c from CardHolderEntity as c where c.isDeleted = true ")
+    List<CardHolderEntity> findDeletedCardHolders();
+
+    @Query(value = "select c from CardHolderEntity as c where c.isDeleted = false ")
+    List<CardHolderEntity> findActiveCardHolders();
+
+    @Query(value = "select c from CardHolderEntity as c where " +
+            "c.firstName like CONCAT(:firstName, '%') and " +
+            "c.lastName like CONCAT(:lastName, '%') ")
+    List<CardHolderEntity> findCardHolderEntitiesLikeFirstAndLastName(@Param("firstName") String firstName,
+                                                                      @Param("lastName") String lastName);
+
 }
