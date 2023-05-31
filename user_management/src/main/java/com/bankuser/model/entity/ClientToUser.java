@@ -18,7 +18,7 @@ public class ClientToUser {
     @GeneratedValue ( strategy = GenerationType.IDENTITY )
     private long   id;
     @OneToOne ( cascade = CascadeType.ALL )
-    private User   user;
+    private UserEntity   user;
     @OneToOne ( cascade = CascadeType.ALL )
     private Client client;
     
@@ -28,7 +28,7 @@ public class ClientToUser {
      * @param user
      * @param client
      */
-    public ClientToUser (User user, Client client) {
+    public ClientToUser (UserEntity user, Client client) {
         this.user = user;
         this.client = client;
     }
@@ -51,14 +51,14 @@ public class ClientToUser {
     /**
      * @return the user
      */
-    public User getUser () {
+    public UserEntity getUser () {
         return user;
     }
     
     /**
      * @param user the user to set
      */
-    public void setUser (User user) {
+    public void setUser (UserEntity user) {
         this.user = user;
     }
     
