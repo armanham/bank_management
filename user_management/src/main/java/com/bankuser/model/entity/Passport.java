@@ -1,15 +1,7 @@
 package com.bankuser.model.entity;
 
 import com.bankuser.model.proxy.PassportP;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.sql.Date;
 
@@ -23,7 +15,7 @@ public class Passport {
     @ManyToOne
     @JoinColumn(name = "user_entity")
     private UserEntity userEntity;
-    @Column(name = "number", nullable = false, length = 15)
+    @Column(name = "number", nullable = false, length = 15, unique = true)
     private String number;
     @Column(name = "issue", nullable = false)
     private Date issue;
@@ -33,6 +25,8 @@ public class Passport {
     private String authority;
     @Column(name = "gender", nullable = false, length = 6)
     private String gender;
+    @Column(name = "flag", nullable = false)
+    private Boolean flag;
 
     public Passport(){}
 
@@ -43,6 +37,7 @@ public class Passport {
         this.expired = expired;
         this.authority = authority;
         this.gender = gender;
+        this.flag = true;
     }
 
     public Passport(final Passport passport) {
@@ -52,15 +47,16 @@ public class Passport {
         this.expired = passport.expired;
         this.authority = passport.authority;
         this.gender = passport.gender;
+        this.flag = passport.flag;
     }
 
     public Passport(final PassportP passportP) {
-        this.userEntity = new UserEntity(passportP.getUser());
         this.number = passportP.getNumber();
         this.issue = passportP.getIssue();
         this.expired = passportP.getExpired();
         this.authority = passportP.getAuthority();
         this.gender = passportP.getGender();
+        this.flag = true;
     }
 
     public void setId (Long id) {

@@ -22,9 +22,7 @@ public class ClientToUser {
 	@OneToOne(cascade = CascadeType.ALL)
 	private Client client;
 	
-	public ClientToUser() {
-		
-	}
+	public ClientToUser() {}
 
 	/**
 	 * @param user
