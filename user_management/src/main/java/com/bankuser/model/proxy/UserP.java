@@ -2,6 +2,7 @@ package com.bankuser.model.proxy;
 
 import com.bankuser.model.entity.Passport;
 import com.bankuser.model.entity.UserEntity;
+import jakarta.validation.constraints.Pattern;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -14,10 +15,15 @@ public class UserP {
     private Date             birthDate;
     private String           genderP;
     private AddressP         addressP;
+    @Pattern ( regexp = "^[a-zA-Z0-9_.]{3,15}$", message = "Invalid Username Pattern" )
     private String           username;
+    @Pattern ( regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$", message = "Invalid Email Pattern" )
     private String           email;
+    @Pattern ( regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{8,20}$", message = "Invalid Password Pattern" )
     private String           password;
+    @Pattern ( regexp = "\\+374\\d{8}", message = "Invalid Phone Number Pattern" )
     private String           phoneNumber;
+    private List <PassportP> passportPS;
     
     public UserP () {}
     
@@ -31,6 +37,7 @@ public class UserP {
         this.genderP = USER.getGender();
         this.password = USER.getPassword();
         this.phoneNumber = USER.getPhoneNumber();
+        this.passportPS = castPassportPS(USER.getPassports());
     }
     
     public String getUsername () {
@@ -65,23 +72,6 @@ public class UserP {
         this.birthDate = birthDate;
     }
     
-    public String getGender () {
-        return genderP;
-    }
-    
-    public void setGender (String genderP) {
-        this.genderP = genderP;
-    }
-    
-    public AddressP getAddress () {
-        return addressP;
-    }
-    
-    public void setAddress (AddressP addressP) {
-        this.addressP = addressP;
-    }
-    
-    
     public String getEmail () {
         return email;
     }
@@ -106,9 +96,33 @@ public class UserP {
         this.phoneNumber = phoneNumber;
     }
     
-    private List <PassportP> castToAddressP (final List <Passport> passports) {
-        List <PassportP> passportP = new ArrayList <>();
-        passports.forEach(passport -> passportP.add(new PassportP(passport)));
-        return passportP;
+    public String getGenderP () {
+        return genderP;
+    }
+    
+    public void setGenderP (String genderP) {
+        this.genderP = genderP;
+    }
+    
+    public AddressP getAddressP () {
+        return addressP;
+    }
+    
+    public void setAddressP (AddressP addressP) {
+        this.addressP = addressP;
+    }
+    
+    public List <PassportP> getPassportPS () {
+        return passportPS;
+    }
+    
+    public void setPassportPS (List <PassportP> passportPS) {
+        this.passportPS = passportPS;
+    }
+    
+    private List <PassportP> castPassportPS (final List <Passport> passports) {
+        List <PassportP> passportsP = new ArrayList <>();
+        passports.forEach(passport -> passportsP.add(new PassportP(passport)));
+        return passportsP;
     }
 }
