@@ -129,7 +129,8 @@ public class UserServiceImpl implements UserService {
         }
     }
     
-    public User addUserToTableClientToUser (long id, Client client) {
+    @Override
+    public UserEntity addUserToTableClientToUser (long id, Client client) {
         if (andUserRepository.getUserById(id) != null) {
             clientRepository.save(client);
             clientToUserRepository.save(new ClientToUser(andUserRepository.getUserById(id), client));

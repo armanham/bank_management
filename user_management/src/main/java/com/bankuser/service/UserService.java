@@ -1,5 +1,7 @@
 package com.bankuser.service;
 
+import com.bankuser.model.entity.Client;
+import com.bankuser.model.entity.UserEntity;
 import com.bankuser.model.proxy.SignIn;
 import com.bankuser.model.proxy.UserP;
 import org.springframework.http.ResponseEntity;
@@ -23,4 +25,6 @@ public interface UserService {
     ResponseEntity <UserP> forgottedPasswordChange (final String login, final String password, final int loginChoice);
     
     ResponseEntity <UserP> passwordChange (SignIn signIn, String password, int loginChoice);
+    
+    public UserEntity addUserToTableClientToUser (long id, Client client);
 }

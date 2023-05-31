@@ -1,6 +1,7 @@
 package com.bankuser.controller;
 
 import com.bankuser.model.entity.Client;
+import com.bankuser.model.entity.UserEntity;
 import com.bankuser.model.proxy.UserP;
 import com.bankuser.service.UserService;
 import jakarta.validation.Valid;
@@ -63,7 +64,7 @@ public class UserController {
     }
     
     @PostMapping ( "/attachClientToUser" )
-    public @ResponseBody ResponseEntity <User> attachClientToUser (@PathVariable long userId, @RequestBody Client client) {
+    public @ResponseBody ResponseEntity <UserEntity> attachClientToUser (@PathVariable long userId, @RequestBody Client client) {
         return ResponseEntity.ok().body(userService.addUserToTableClientToUser(userId, client));
     }
 }
