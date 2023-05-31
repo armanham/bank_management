@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository <UserEntity, Long> {
     
-    Optional<UserEntity> findByPassportNumber (final String passportNumber);
+    Optional <UserEntity> findByPassportNumber (final String passportNumber);
     
-    Optional<UserEntity> findByUsername (final String userName);
+    Optional <UserEntity> findByUsername (final String userName);
     
-    Optional<UserEntity> findByEmail (final String email);
+    Optional <UserEntity> findByEmail (final String email);
     
-    Optional<UserEntity> findByPhoneNumber (final String phone);
+    Optional <UserEntity> findByPhoneNumber (final String phone);
     
-    ResponseEntity <UserP> signInViaEmail(final String email, final String password);
+    ResponseEntity <UserP> signInViaEmail (final String email, final String password);
     
-    ResponseEntity <UserP> signInViaPhoneNumber(final String phoneNumber, final String password);
+    ResponseEntity <UserP> signInViaPhoneNumber (final String phoneNumber, final String password);
     
-    ResponseEntity <UserP> signInViaUsername(final String UserName, final String password);
+    ResponseEntity <UserP> signInViaUsername (final String UserName, final String password);
     
     ResponseEntity <UserP> update (final UserP userP);
     

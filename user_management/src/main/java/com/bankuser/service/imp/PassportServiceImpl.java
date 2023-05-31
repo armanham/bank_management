@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public class PassportServiceImpl implements PassportService {
+    
     private PassportRepository passportRepository;
     
     @Autowired
@@ -24,7 +25,8 @@ public class PassportServiceImpl implements PassportService {
     
     @Override
     public void save (List <Passport> passports) {
-        for (Passport i: passports)
+        for (Passport i : passports) {
             this.save(i);
+        }
     }
 }

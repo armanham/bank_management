@@ -18,15 +18,15 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
-    AndUserRepository andUserRepository;
-    ClientRepository clientRepository;
+    
+    UserRepository         userRepository;
+    AndUserRepository      andUserRepository;
+    ClientRepository       clientRepository;
     ClientToUserRepository clientToUserRepository;
     PassportService        passportService;
     
     @Autowired
-    public UserServiceImpl (UserRepository userRepository,AndUserRepository andUserRepository,ClientRepository clientRepository,
-    		ClientToUserRepository clientToUserRepository, PassportService passportService) {
+    public UserServiceImpl (UserRepository userRepository, AndUserRepository andUserRepository, ClientRepository clientRepository, ClientToUserRepository clientToUserRepository, PassportService passportService) {
         this.userRepository = userRepository;
         this.andUserRepository = andUserRepository;
         this.clientRepository = clientRepository;
@@ -35,25 +35,25 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public ResponseEntity<UserP> signup (final UserP userP) {
+    public ResponseEntity <UserP> signup (final UserP userP) {
         UserEntity user = new UserEntity(userP);
-        boolean t = false;
+        boolean    t    = false;
         for (int i = 0; i < userP.getPassportPS().size(); i++) {
-            Optional<UserEntity> op1 = userRepository.findByPassportNumber(userP.getPassportPS().get(i).getNumber());
+            Optional <UserEntity> op1 = userRepository.findByPassportNumber(userP.getPassportPS().get(i).getNumber());
             t = t || op1.isPresent();
         }
-        Optional<UserEntity> op2 = userRepository.findByEmail(userP.getEmail());
-        Optional<UserEntity> op3 = userRepository.findByUsername(userP.getUsername());
-        Optional<UserEntity> op4 = userRepository.findByPhoneNumber(userP.getPhoneNumber());
+        Optional <UserEntity> op2 = userRepository.findByEmail(userP.getEmail());
+        Optional <UserEntity> op3 = userRepository.findByUsername(userP.getUsername());
+        Optional <UserEntity> op4 = userRepository.findByPhoneNumber(userP.getPhoneNumber());
         if (t || op2.isPresent() || op3.isPresent() || op4.isPresent()) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(505));
+            return new ResponseEntity <>(HttpStatusCode.valueOf(505));
         }
         userRepository.save(user);
         for (Passport i : user.getPassports()) {
             i.setUser(user);
         }
         passportService.save(user.getPassports());
-        return new ResponseEntity<>(HttpStatusCode.valueOf(201));
+        return new ResponseEntity <>(HttpStatusCode.valueOf(201));
     }
     
     @Override
@@ -62,12 +62,12 @@ public class UserServiceImpl implements UserService {
             case 1 -> userRepository.signInViaEmail(login, password);
             case 2 -> userRepository.signInViaPhoneNumber(login, password);
             case 3 -> userRepository.signInViaUsername(login, password);
-            default -> new ResponseEntity<>(HttpStatusCode.valueOf(501));
+            default -> new ResponseEntity <>(HttpStatusCode.valueOf(501));
         };
     }
     
     @Override
-    public ResponseEntity<UserP> editInfo(final UserP userP){
+    public ResponseEntity <UserP> editInfo (final UserP userP) {
         return this.userRepository.update(userP);
     }
     
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
             case 1 -> userRepository.forgotPasswordViaEmail(login);
             case 2 -> userRepository.forgotPasswordViaPhoneNumber(login);
             case 3 -> userRepository.forgotPasswordViaUsername(login);
-            default -> new ResponseEntity<>(HttpStatusCode.valueOf(501));
+            default -> new ResponseEntity <>(HttpStatusCode.valueOf(501));
         };
     }
     
@@ -87,31 +87,33 @@ public class UserServiceImpl implements UserService {
             case 1 -> userRepository.resetPasswordViaEmail(login, password);
             case 2 -> userRepository.resetPasswordViaPhoneNumber(login, password);
             case 3 -> userRepository.resetPasswordViaUsername(login, password);
-            default -> new ResponseEntity<>(HttpStatusCode.valueOf(501));
+            default -> new ResponseEntity <>(HttpStatusCode.valueOf(501));
         };
     }
     
     @Override
     public ResponseEntity <UserP> passwordChange (SignIn signIn, String password, int loginChoice) {
         int value = this.signIn(signIn.getLogin(), signIn.getPassword(), loginChoice).getStatusCode().value();
-        if (value >= 200 && value < 300){
+        if (value >= 200 && value < 300) {
             return switch (loginChoice) {
                 case 1 -> userRepository.resetPasswordViaEmail(signIn.getLogin(), password);
                 case 2 -> userRepository.resetPasswordViaPhoneNumber(signIn.getLogin(), password);
                 case 3 -> userRepository.resetPasswordViaUsername(signIn.getLogin(), password);
-                default -> new ResponseEntity<>(HttpStatusCode.valueOf(501));
+                default -> new ResponseEntity <>(HttpStatusCode.valueOf(501));
             };
         } else if (value >= 400 && value < 500) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(401));
+            return new ResponseEntity <>(HttpStatusCode.valueOf(401));
         } else {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(501));
+            return new ResponseEntity <>(HttpStatusCode.valueOf(501));
         }
     }
     
     @Override
     public boolean contains (final String string, final char symbol) {
         for (int i = 0; i < string.length(); i++) {
-            if (string.charAt(i) == symbol) return true;
+            if (string.charAt(i) == symbol) {
+                return true;
+            }
         }
         return false;
     }
@@ -120,21 +122,19 @@ public class UserServiceImpl implements UserService {
     public int loginType (String login) {
         if (this.contains(login, '@')) {
             return 1;
-        }
-        else if (this.contains(login, '+')) {
+        } else if (this.contains(login, '+')) {
             return 2;
-        }
-        else {
+        } else {
             return 3;
         }
     }
     
-    public User addUserToTableClientToUser(long id,Client client) {
-    	if(andUserRepository.getUserById(id) != null) {
-    		clientRepository.save(client);
-    		clientToUserRepository.save(new ClientToUser(andUserRepository.getUserById(id),client));
-    		return andUserRepository.getUserById(id);
-    	}
-    	throw new IllegalArgumentException("User not found");
+    public User addUserToTableClientToUser (long id, Client client) {
+        if (andUserRepository.getUserById(id) != null) {
+            clientRepository.save(client);
+            clientToUserRepository.save(new ClientToUser(andUserRepository.getUserById(id), client));
+            return andUserRepository.getUserById(id);
+        }
+        throw new IllegalArgumentException("User not found");
     }
 }

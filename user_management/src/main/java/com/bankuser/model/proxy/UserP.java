@@ -15,15 +15,15 @@ public class UserP {
     private Date             birthDate;
     private String           genderP;
     private AddressP         addressP;
-    @Pattern(regexp = "^[a-zA-Z0-9_.]{3,15}$", message = "Invalid Username Pattern")
+    @Pattern ( regexp = "^[a-zA-Z0-9_.]{3,15}$", message = "Invalid Username Pattern" )
     private String           username;
-    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$", message = "Invalid Email Pattern")
+    @Pattern ( regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$", message = "Invalid Email Pattern" )
     private String           email;
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{8,20}$", message = "Invalid Password Pattern")
+    @Pattern ( regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{8,20}$", message = "Invalid Password Pattern" )
     private String           password;
-    @Pattern(regexp = "\\+374\\d{8}", message = "Invalid Phone Number Pattern")
+    @Pattern ( regexp = "\\+374\\d{8}", message = "Invalid Phone Number Pattern" )
     private String           phoneNumber;
-    private List<PassportP>  passportPS;
+    private List <PassportP> passportPS;
     
     public UserP () {}
     
@@ -120,8 +120,8 @@ public class UserP {
         this.passportPS = passportPS;
     }
     
-    private List<PassportP> castPassportPS (final List <Passport> passports) {
-        List<PassportP> passportsP = new ArrayList <>();
+    private List <PassportP> castPassportPS (final List <Passport> passports) {
+        List <PassportP> passportsP = new ArrayList <>();
         passports.forEach(passport -> passportsP.add(new PassportP(passport)));
         return passportsP;
     }

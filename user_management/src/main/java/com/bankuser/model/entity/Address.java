@@ -6,9 +6,10 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Address {
-    @Column(name = "country", nullable = false, length = 50)
+    
+    @Column ( name = "country", nullable = false, length = 50 )
     private String country;
-    @Column(name = "city", nullable = false, length = 50)
+    @Column ( name = "city", nullable = false, length = 50 )
     private String city;
     
     public Address () {
@@ -18,13 +19,13 @@ public class Address {
         this.country = country;
         this.city = city;
     }
-
-    public Address(final Address address) {
+    
+    public Address (final Address address) {
         this.country = address.country;
         this.city = address.city;
     }
-
-    public Address(final AddressP addressP) {
+    
+    public Address (final AddressP addressP) {
         this.city = addressP.getCity();
         this.country = addressP.getCountry();
     }

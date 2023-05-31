@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.bankuser.model.entity.Client;
 
-public interface ClientRepository extends JpaRepository<Client,Long> {
-	
+public interface ClientRepository extends JpaRepository <Client, Long> {
+
 }

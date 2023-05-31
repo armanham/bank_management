@@ -12,54 +12,58 @@ import org.springframework.web.bind.annotation.*;
 import com.bankuser.model.proxy.*;
 
 @RestController
-@RequestMapping (value = "/User")
+@RequestMapping ( value = "/User" )
 public class UserController {
-    private       UserService userService;
+    
+    private UserService userService;
+    
     @Autowired
     public UserController (UserService userService) {
         this.userService = userService;
     }
     
-    public UserController (){}
+    public UserController () {}
     
-    @PostMapping (value = "/signup")
-    public @ResponseBody ResponseEntity <UserP> signUp(@Valid @RequestBody @NonNull UserP userP) {
+    @PostMapping ( value = "/signup" )
+    public @ResponseBody ResponseEntity <UserP> signUp (@Valid @RequestBody @NonNull UserP userP) {
         return userService.signup(userP);
     }
     
-    @GetMapping (value = "/signin")
-    public ResponseEntity <UserP> signIn(@RequestBody @NonNull SignIn signIn) {
+    @GetMapping ( value = "/signin" )
+    public @ResponseBody ResponseEntity <UserP> signIn (@RequestBody @NonNull SignIn signIn) {
         return userService.signIn(signIn.getLogin(), signIn.getPassword(), userService.loginType(signIn.getLogin()));
     }
     
-    @PutMapping (value = "/editinfo")
-    public @ResponseBody ResponseEntity <UserP> editInfo(@Valid @RequestBody @NonNull UserP userP) {
+    @PutMapping ( value = "/editinfo" )
+    public @ResponseBody ResponseEntity <UserP> editInfo (@Valid @RequestBody @NonNull UserP userP) {
         return userService.editInfo(userP);
     }
     
-    @PutMapping (value = "/changepassword")
-    public @ResponseBody ResponseEntity<UserP> changePassword(@RequestBody @NonNull PasswordChange passwordChange) {
-        if (passwordChange.getNew1().equals(passwordChange.getNew2()))
+    @PutMapping ( value = "/changepassword" )
+    public @ResponseBody ResponseEntity <UserP> changePassword (@RequestBody @NonNull PasswordChange passwordChange) {
+        if (passwordChange.getNew1().equals(passwordChange.getNew2())) {
             return userService.passwordChange(passwordChange.getSignIn(), passwordChange.getNew1(), userService.loginType(passwordChange.getSignIn().getLogin()));
-        else
-            return new ResponseEntity<>(HttpStatusCode.valueOf(501));
+        } else {
+            return new ResponseEntity <>(HttpStatusCode.valueOf(501));
+        }
     }
     
-    @PutMapping (value = "/changeforgottedpassword")
-    public @ResponseBody ResponseEntity <UserP> changeForgottedPassword(@RequestBody @NonNull ForgottedPasswordChange forgottedPasswordChange) {
-        if (forgottedPasswordChange.getNew1().equals(forgottedPasswordChange.getNew2()))
+    @PutMapping ( value = "/changeforgottedpassword" )
+    public @ResponseBody ResponseEntity <UserP> changeForgottedPassword (@RequestBody @NonNull ForgottedPasswordChange forgottedPasswordChange) {
+        if (forgottedPasswordChange.getNew1().equals(forgottedPasswordChange.getNew2())) {
             return userService.forgottedPasswordChange(forgottedPasswordChange.getLogin(), forgottedPasswordChange.getNew1(), userService.loginType(forgottedPasswordChange.getLogin()));
-        else
-            return new ResponseEntity<>(HttpStatusCode.valueOf(501));
+        } else {
+            return new ResponseEntity <>(HttpStatusCode.valueOf(501));
+        }
     }
     
-    @GetMapping (value = "/forgotpassword")
-    public @ResponseBody ResponseEntity <UserP> forgotPassword(@RequestBody @NonNull ForgotPassword forgotPassword) {
+    @GetMapping ( value = "/forgotpassword" )
+    public @ResponseBody ResponseEntity <UserP> forgotPassword (@RequestBody @NonNull ForgotPassword forgotPassword) {
         return userService.forgotPassword(forgotPassword.getLogin(), userService.loginType(forgotPassword.getLogin()));
     }
     
-    @PostMapping("/attachClientToUser")
-    public ResponseEntity<User> attachClientToUser(@PathVariable long userId,@RequestBody Client client) {
-    	return ResponseEntity.ok().body(userService.addUserToTableClientToUser(userId,client));
+    @PostMapping ( "/attachClientToUser" )
+    public @ResponseBody ResponseEntity <User> attachClientToUser (@PathVariable long userId, @RequestBody Client client) {
+        return ResponseEntity.ok().body(userService.addUserToTableClientToUser(userId, client));
     }
 }

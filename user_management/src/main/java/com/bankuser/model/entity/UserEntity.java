@@ -9,38 +9,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "user_entity")
+@Table ( name = "user_entity" )
 public class UserEntity {
     
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    private Long id;
-    @Column(name = "first_name", nullable = false, length = 50)
-    private String firstName;
-    @Column(name = "last_name", nullable = false, length = 50)
-    private String lastName;
-    @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
-    @Column(name = "gender", nullable = false, length = 6)
-    private String gender;
+    @GeneratedValue ( strategy = GenerationType.IDENTITY )
+    private           Long            id;
+    @Column ( name = "first_name", nullable = false, length = 50 )
+    private           String          firstName;
+    @Column ( name = "last_name", nullable = false, length = 50 )
+    private           String          lastName;
+    @Column ( name = "birth_date", nullable = false )
+    private           Date            birthDate;
+    @Column ( name = "gender", nullable = false, length = 6 )
+    private           String          gender;
     @Embedded
-    private Address address;
-    @Column(name = "user_name", nullable = false, length = 50, unique = true)
-    private String username;
-    @Column(name = "email", nullable = false, length = 50, unique = true)
-    private String email;
-    private transient String password;
-    @Column(name = "password_hash", nullable = false)
-    private Integer passwordHash;
-    @Column(name = "phone_number", nullable = false, length = 12, unique = true)
-    private String phoneNumber;
-    @OneToMany(mappedBy = "userEntity")
-    private List<Passport> passports;
-    @Column(name = "flag", nullable = false)
-    private Boolean flag;
-    public UserEntity(){}
-
-    public UserEntity(final UserP userP) {
+    private           Address         address;
+    @Column ( name = "user_name", nullable = false, length = 50, unique = true )
+    private           String          username;
+    @Column ( name = "email", nullable = false, length = 50, unique = true )
+    private           String          email;
+    private transient String          password;
+    @Column ( name = "password_hash", nullable = false )
+    private           Integer         passwordHash;
+    @Column ( name = "phone_number", nullable = false, length = 12, unique = true )
+    private           String          phoneNumber;
+    @OneToMany ( mappedBy = "userEntity" )
+    private           List <Passport> passports;
+    @Column ( name = "flag", nullable = false )
+    private           Boolean         flag;
+    
+    public UserEntity () {}
+    
+    public UserEntity (final UserP userP) {
         this.gender = userP.getGenderP();
         this.address = new Address(userP.getAddressP());
         this.email = userP.getEmail();
@@ -54,7 +55,7 @@ public class UserEntity {
         this.flag = true;
         this.passwordHash = this.password.hashCode();
     }
-
+    
     public Long getId () {
         return id;
     }
@@ -160,8 +161,8 @@ public class UserEntity {
         this.passports = passports;
     }
     
-    private List<Passport> castListPassports(final List<PassportP> passportPS) {
-        List<Passport> passports = new ArrayList<>();
+    private List <Passport> castListPassports (final List <PassportP> passportPS) {
+        List <Passport> passports = new ArrayList <>();
         passportPS.forEach(passportP -> passports.add(new Passport(passportP)));
         return passports;
     }

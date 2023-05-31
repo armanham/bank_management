@@ -6,31 +6,31 @@ import jakarta.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table(name = "passport")
+@Table ( name = "passport" )
 public class Passport {
     
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    private Long id;
+    @GeneratedValue ( strategy = GenerationType.IDENTITY )
+    private Long       id;
     @ManyToOne
-    @JoinColumn(name = "user_entity")
+    @JoinColumn ( name = "user_entity" )
     private UserEntity userEntity;
-    @Column(name = "number", nullable = false, length = 15, unique = true)
-    private String number;
-    @Column(name = "issue", nullable = false)
-    private Date issue;
-    @Column(name = "expired", nullable = false)
-    private Date expired;
-    @Column(name = "authority", nullable = false, length = 50)
-    private String authority;
-    @Column(name = "gender", nullable = false, length = 6)
-    private String gender;
-    @Column(name = "flag", nullable = false)
-    private Boolean flag;
-
-    public Passport(){}
-
-    public Passport(UserEntity user, String number, Date issue, Date expired, String authority, String gender) {
+    @Column ( name = "number", nullable = false, length = 15, unique = true )
+    private String     number;
+    @Column ( name = "issue", nullable = false )
+    private Date       issue;
+    @Column ( name = "expired", nullable = false )
+    private Date       expired;
+    @Column ( name = "authority", nullable = false, length = 50 )
+    private String     authority;
+    @Column ( name = "gender", nullable = false, length = 6 )
+    private String     gender;
+    @Column ( name = "flag", nullable = false )
+    private Boolean    flag;
+    
+    public Passport () {}
+    
+    public Passport (UserEntity user, String number, Date issue, Date expired, String authority, String gender) {
         this.userEntity = user;
         this.number = number;
         this.issue = issue;
@@ -39,8 +39,8 @@ public class Passport {
         this.gender = gender;
         this.flag = true;
     }
-
-    public Passport(final Passport passport) {
+    
+    public Passport (final Passport passport) {
         this.userEntity = passport.userEntity;
         this.number = passport.number;
         this.issue = passport.issue;
@@ -49,8 +49,8 @@ public class Passport {
         this.gender = passport.gender;
         this.flag = passport.flag;
     }
-
-    public Passport(final PassportP passportP) {
+    
+    public Passport (final PassportP passportP) {
         this.number = passportP.getNumber();
         this.issue = passportP.getIssue();
         this.expired = passportP.getExpired();
@@ -58,7 +58,7 @@ public class Passport {
         this.gender = passportP.getGender();
         this.flag = true;
     }
-
+    
     public void setId (Long id) {
         this.id = id;
     }

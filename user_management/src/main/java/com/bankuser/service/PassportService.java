@@ -7,6 +7,8 @@ import java.util.List;
 
 @Service
 public interface PassportService {
-    void save(final Passport passport);
-    void save(final List <Passport> passports);
+    
+    void save (final Passport passport);
+    
+    void save (final List <Passport> passports);
 }
