@@ -1,9 +1,9 @@
 package com.bdg.cardholder_management_module.service;
 
-import com.bdg.cardholder_management_module.model.AddressModel;
-import com.bdg.cardholder_management_module.model.CardHolderModel;
-import com.bdg.cardholder_management_module.model.PassportModel;
-import com.bdg.cardholder_management_module.model.PersonalInfoModel;
+import com.bdg.cardholder_management_module.model.dto.AddressModel;
+import com.bdg.cardholder_management_module.model.dto.CardHolderModel;
+import com.bdg.cardholder_management_module.model.dto.PassportModel;
+import com.bdg.cardholder_management_module.model.dto.PersonalInfoModel;
 
 import java.util.List;
 
@@ -30,4 +30,8 @@ public interface CardHolderService {
     CardHolderModel findCardHolderByEmail(String email);
 
     List<CardHolderModel> findCardHoldersByFullName(String firstName, String lastName);
+
+    List<CardHolderModel> findDeletedCardHolders();
+
+    List<CardHolderModel> findActiveCardHolders();
 }

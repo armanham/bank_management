@@ -1,5 +1,7 @@
 package com.bankuser.controller;
 
+import com.bankuser.model.entity.Client;
+import com.bankuser.model.entity.User;
 import com.bankuser.model.proxy.AddressP;
 import com.bankuser.model.proxy.PassportP;
 import com.bankuser.model.proxy.UserP;
@@ -98,5 +100,10 @@ public class UserController {
     public ResponseEntity <UserP> forgotPassword(UserP userP) {
         
         return new ResponseEntity<UserP>(HttpStatusCode.valueOf(201));
+    }
+    
+    @PostMapping("/attachClientToUser")
+    public ResponseEntity<User> attachClientToUser(@PathVariable long userId,@RequestBody Client client) {
+    	return ResponseEntity.ok().body(userService.addUserToTableClientToUser(userId,client));
     }
 }

@@ -49,8 +49,8 @@ public class User {
         this.birthDate = userP.getBirthDate();
         this.firstName = userP.getFirstName();
         this.lastName = userP.getLastName();
-        this.passports = castListPassports(userP.getPassports());
-        this.username = userP.getUserName();
+//        this.passports = castListPassports(userP.getPassports());
+        this.username = userP.getUsername();
         this.password = userP.getPassword();
         this.phoneNumber = userP.getPhoneNumber();
         this.flag = true;
