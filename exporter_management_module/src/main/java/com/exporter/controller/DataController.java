@@ -29,13 +29,13 @@ public class DataController {
 	
 	@PostMapping("/import")
 	@ResponseBody
-	public ResponseEntity<byte[]> importUserCSV(@RequestParam(value = "filetype") FileType fileType, @RequestParam(value = "path") String path) {
+	public ResponseEntity<byte[]> importUser(@RequestParam(value = "filetype") FileType fileType, @RequestParam(value = "path") String path) {
 		return ResponseEntity.ok().body(selector.importTransactionChoose(fileType,path));
 	}
 	
 	@PostMapping("/export")
 	@ResponseBody
-	public ResponseEntity <List<Transaction>> exportUserCSV(@RequestParam(value = "filetype") FileType fileType, @RequestBody List<Transaction> transactionsList) {
+	public ResponseEntity <List<Transaction>> exportUser(@RequestParam(value = "filetype") FileType fileType, @RequestBody List<Transaction> transactionsList) {
 		return ResponseEntity.ok().body(selector.exportTransactionChoose(fileType, transactionsList));
 	}
 	
