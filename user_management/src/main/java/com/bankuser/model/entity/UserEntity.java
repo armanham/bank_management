@@ -6,11 +6,18 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import lombok.Builder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+@Builder
 @Entity
 @Table ( name = "user_entity" )
-public class UserEntity {
+public class UserEntity implements UserDetails {
     
     @Id
     @GeneratedValue ( strategy = GenerationType.IDENTITY )
@@ -38,6 +45,17 @@ public class UserEntity {
     private           List <Passport> passports;
     @Column ( name = "flag", nullable = false )
     private           Boolean         flag;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
     
     public UserEntity () {}
     
@@ -55,7 +73,25 @@ public class UserEntity {
         this.flag = true;
         this.passwordHash = this.password.hashCode();
     }
-    
+
+    public UserEntity(Long id, String firstName, String lastName, Date birthDate, String gender, Address address, String username, String email, String password, Integer passwordHash, String phoneNumber, List<Passport> passports, Boolean flag, Role role) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.address = address;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.passwordHash = passwordHash;
+        this.phoneNumber = phoneNumber;
+        this.passports = passports;
+        this.flag = flag;
+        this.role = role;
+    }
+
+
     public Long getId () {
         return id;
     }
@@ -165,5 +201,30 @@ public class UserEntity {
         List <Passport> passports = new ArrayList <>();
         passportPS.forEach(passportP -> passports.add(new Passport(passportP)));
         return passports;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
